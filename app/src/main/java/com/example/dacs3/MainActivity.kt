@@ -41,6 +41,7 @@ import kotlin.math.abs
 
             initBanner()
             initTopMovies()
+            initUpcoming()
         }
 
         private fun initTopMovies() {
@@ -66,8 +67,8 @@ import kotlin.math.abs
                                 )
                             binding.recyclerViewTopMovies.adapter = FilmListAdapter(items)
                         }
-                        binding.progressBarTopMovies.visibility = View.GONE
                     }
+                    binding.progressBarTopMovies.visibility = View.GONE
                 }
 
                 override fun onCancelled(p0: DatabaseError) {
@@ -118,6 +119,40 @@ import kotlin.math.abs
                     super.onPageSelected(position)
                     sliderHandle.removeCallbacks(sliderRunnable)
                 }
+            })
+        }
+
+        private fun initUpcoming() {
+            val myRef : DatabaseReference = database.getReference("Upcomming")
+            binding.progressBarUpcoming.visibility = View.VISIBLE
+            val items = ArrayList<com.example.dacs3.model.Film>()
+
+            myRef.addListenerForSingleValueEvent(object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if(snapshot.exists()){
+                        for (i in snapshot.children){
+                            val item = i.getValue(Film::class.java)
+                            if(item != null){
+                                items.add(item)
+                            }
+                        }
+                        if(items.isNotEmpty()){
+                            binding.recyclerViewUpcoming.layoutManager =
+                                LinearLayoutManager(
+                                    this@MainActivity,
+                                    LinearLayoutManager.HORIZONTAL,
+                                    false
+                                )
+                            binding.recyclerViewUpcoming.adapter = FilmListAdapter(items)
+                        }
+                    }
+                    binding.progressBarUpcoming.visibility = View.GONE
+                }
+
+                override fun onCancelled(error: com.google.firebase.database.DatabaseError){
+
+                }
+
             })
         }
     }

@@ -142,12 +142,12 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="200dp">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerViewTopMovies"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="200dp"
                     android:clipToPadding="false"
                     android:paddingStart="12dp"
                     android:paddingEnd="12dp"
@@ -200,12 +200,12 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="200dp">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerViewUpcoming"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="200dp"
                     android:clipToPadding="false"
                     android:paddingStart="12dp"
                     android:paddingEnd="12dp"
