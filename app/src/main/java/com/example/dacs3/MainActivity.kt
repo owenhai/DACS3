@@ -6,13 +6,18 @@ import android.os.Looper
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.get
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
+import com.example.dacs3.adapter.FilmListAdapter
 import com.example.dacs3.adapter.SliderAdapter
 import com.example.dacs3.databinding.ActivityMainBinding
+import com.example.dacs3.model.Film
 import com.example.dacs3.model.SliderItems
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlin.math.abs
@@ -35,6 +40,41 @@ import kotlin.math.abs
             database = FirebaseDatabase.getInstance()
 
             initBanner()
+            initTopMovies()
+        }
+
+        private fun initTopMovies() {
+            val myRef : DatabaseReference = database.getReference("Items")
+            binding.progressBarTopMovies.visibility = View.VISIBLE
+            val items = ArrayList<com.example.dacs3.model.Film>()
+
+            myRef.addListenerForSingleValueEvent(object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if(snapshot.exists()){
+                        for (i in snapshot.children){
+                            val item = i.getValue(Film::class.java)
+                            if(item != null){
+                                items.add(item)
+                            }
+                        }
+                        if(items.isNotEmpty()){
+                            binding.recyclerViewTopMovies.layoutManager =
+                                LinearLayoutManager(
+                                    this@MainActivity,
+                                    LinearLayoutManager.HORIZONTAL,
+                                    false
+                                )
+                            binding.recyclerViewTopMovies.adapter = FilmListAdapter(items)
+                        }
+                        binding.progressBarTopMovies.visibility = View.GONE
+                    }
+                }
+
+                override fun onCancelled(p0: DatabaseError) {
+
+                }
+
+            })
         }
 
         private fun initBanner() {
@@ -62,7 +102,6 @@ import kotlin.math.abs
             binding.viewPager2.clipToPadding = false
             binding.viewPager2.clipChildren = false
             binding.viewPager2.offscreenPageLimit = 3
-            binding.viewPager2.getChildAt(0).overScrollMode = View.OVER_SCROLL_NEVER
 
             val compositePageTransformer = CompositePageTransformer().apply {
                 addTransformer(MarginPageTransformer(40))

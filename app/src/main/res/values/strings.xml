@@ -3,4 +3,7 @@
     <string name="cinema_ticket_booking">Cinema Ticket Booking</string>
     <string name="discover_and_book_the_latest_movies_nat_your_favourite_cinemas_n_easy_and_fast">Discover and book the latest movies\nat your favourite cinemas.\n Easy and fast!</string>
     <string name="get_started">Get Started</string>
+    <string name="see_all">See All</string>
+    <string name="top_movies">Top Movies</string>
+    <string name="upcoming_movies">Upcoming Movies</string>
 </resources>
