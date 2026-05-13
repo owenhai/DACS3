@@ -12,4 +12,5 @@
     <string name="description">description</string>
     <string name="cast">Cast</string>
     <string name="buy_ticket">Buy Ticket</string>
+    <string name="casts">Casts</string>
 </resources>
