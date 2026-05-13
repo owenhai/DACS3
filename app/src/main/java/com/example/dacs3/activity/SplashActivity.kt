@@ -1,4 +1,4 @@
-package com.example.dacs3
+package com.example.dacs3.activity
 
 import android.content.Intent
 import android.os.Bundle

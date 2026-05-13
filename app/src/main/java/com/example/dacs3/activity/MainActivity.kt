@@ -1,4 +1,4 @@
-    package com.example.dacs3
+package com.example.dacs3.activity
 
 import android.os.Bundle
 import android.os.Handler
@@ -47,7 +47,7 @@ import kotlin.math.abs
         private fun initTopMovies() {
             val myRef : DatabaseReference = database.getReference("Items")
             binding.progressBarTopMovies.visibility = View.VISIBLE
-            val items = ArrayList<com.example.dacs3.model.Film>()
+            val items = ArrayList<Film>()
 
             myRef.addListenerForSingleValueEvent(object : ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -83,7 +83,7 @@ import kotlin.math.abs
             binding.progressBarSlider.visibility = View.VISIBLE
 
             myRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: com.google.firebase.database.DataSnapshot) {
+                override fun onDataChange(snapshot: DataSnapshot) {
                     val list = mutableListOf<SliderItems>()
                     for (data in snapshot.children) {
                         val item = data.getValue(SliderItems::class.java)
@@ -93,7 +93,7 @@ import kotlin.math.abs
                     binding.progressBarSlider.visibility = View.GONE
                 }
 
-                override fun onCancelled(error: com.google.firebase.database.DatabaseError) {
+                override fun onCancelled(error: DatabaseError) {
                 }
             })
         }
@@ -125,7 +125,7 @@ import kotlin.math.abs
         private fun initUpcoming() {
             val myRef : DatabaseReference = database.getReference("Upcomming")
             binding.progressBarUpcoming.visibility = View.VISIBLE
-            val items = ArrayList<com.example.dacs3.model.Film>()
+            val items = ArrayList<Film>()
 
             myRef.addListenerForSingleValueEvent(object : ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -149,7 +149,7 @@ import kotlin.math.abs
                     binding.progressBarUpcoming.visibility = View.GONE
                 }
 
-                override fun onCancelled(error: com.google.firebase.database.DatabaseError){
+                override fun onCancelled(error: DatabaseError){
 
                 }
 

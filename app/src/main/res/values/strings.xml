@@ -6,4 +6,10 @@
     <string name="see_all">See All</string>
     <string name="top_movies">Top Movies</string>
     <string name="upcoming_movies">Upcoming Movies</string>
+    <string name="year">year</string>
+    <string name="imdb">imdb</string>
+    <string name="summery">Summery</string>
+    <string name="description">description</string>
+    <string name="cast">Cast</string>
+    <string name="buy_ticket">Buy Ticket</string>
 </resources>
