@@ -6,20 +6,25 @@ import android.os.Looper
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.example.dacs3.adapter.FilmListAdapter
+import com.example.dacs3.adapter.SeatListAdapter
 import com.example.dacs3.adapter.SliderAdapter
 import com.example.dacs3.databinding.ActivityMainBinding
 import com.example.dacs3.model.Film
+import com.example.dacs3.model.Seat
 import com.example.dacs3.model.SliderItems
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import java.text.DecimalFormat
+import kotlin.contracts.Returns
 import kotlin.math.abs
 
     class MainActivity : AppCompatActivity() {
@@ -42,7 +47,10 @@ import kotlin.math.abs
             initBanner()
             initTopMovies()
             initUpcoming()
+
         }
+
+
 
         private fun initTopMovies() {
             val myRef : DatabaseReference = database.getReference("Items")
