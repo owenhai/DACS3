@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dacs3.R
 import com.example.dacs3.adapter.DateAdapter
+import com.example.dacs3.adapter.TimeAdapter
 import com.example.dacs3.databinding.ActivitySeatListBinding
 import com.example.dacs3.model.Film
 import java.time.LocalDate
@@ -36,6 +37,13 @@ class SeatListActivity : AppCompatActivity() {
                     LinearLayoutManager.HORIZONTAL,
                     false)
             dateRecyclerview.adapter = DateAdapter(generateDates())
+
+            TimeRecyclerview.layoutManager =
+                LinearLayoutManager(
+                    this@SeatListActivity ,
+                    LinearLayoutManager.HORIZONTAL,
+                    false)
+            TimeRecyclerview.adapter = TimeAdapter(generateTimeSlots())
         }
     }
 
@@ -57,4 +65,16 @@ class SeatListActivity : AppCompatActivity() {
         }
         return dates
     }
+
+    private fun generateTimeSlots(): List<String> {
+        val timeSlots = mutableListOf<String>()
+        val formatter = DateTimeFormatter.ofPattern("HH:mm a")
+
+        for (i in 0 until 24 step 2) {
+            val time = LocalDate.now().atTime(i, 0).format(formatter)
+            timeSlots.add(time)
+        }
+        return timeSlots
+    }
+
 }

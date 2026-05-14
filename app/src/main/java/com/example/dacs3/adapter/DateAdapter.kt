@@ -20,7 +20,7 @@ class DateAdapter(private val timeSlots : List<String>) :
                 binding.dayMonthTxt.text = dateParts[1] +  " " + dateParts[2]
 
                 if(selectedPosition == position){
-                    binding.mainLayout.setBackgroundResource(R.drawable.white_bg)
+                    binding.mainLayout.setBackgroundResource(R.drawable.orange_bg)
                     binding.dayTxt.setTextColor(binding.root.context.getColor(R.color.black))
                     binding.dayMonthTxt.setTextColor(binding.root.context.getColor(R.color.black))
                 }else{
