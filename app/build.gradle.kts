@@ -46,6 +46,7 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.firebase.database)
+    implementation(libs.firebase.auth)
     implementation(libs.androidx.viewpager2)
     implementation(libs.androidx.recyclerview)
     testImplementation(libs.junit)

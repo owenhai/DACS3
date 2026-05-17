@@ -1,55 +1,105 @@
 package com.example.dacs3.activity
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.example.dacs3.adapter.FilmListAdapter
-import com.example.dacs3.adapter.SeatListAdapter
 import com.example.dacs3.adapter.SliderAdapter
 import com.example.dacs3.databinding.ActivityMainBinding
 import com.example.dacs3.model.Film
-import com.example.dacs3.model.Seat
 import com.example.dacs3.model.SliderItems
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import java.text.DecimalFormat
-import kotlin.contracts.Returns
 import kotlin.math.abs
 
-    class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
-        private lateinit var binding: ActivityMainBinding
-        private lateinit var database: FirebaseDatabase
-        private val sliderHandle = Handler(Looper.getMainLooper())
-        private val sliderRunnable = Runnable {
-            binding.viewPager2.currentItem = binding.viewPager2.currentItem + 1
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var database: FirebaseDatabase
+    private lateinit var firebaseAuth: FirebaseAuth
+    private val sliderHandle = Handler(Looper.getMainLooper())
+    private val sliderRunnable = Runnable {
+        binding.viewPager2.currentItem = binding.viewPager2.currentItem + 1
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        enableEdgeToEdge()
+        setContentView(binding.root)
+
+        database = FirebaseDatabase.getInstance()
+        firebaseAuth = FirebaseAuth.getInstance()
+
+        // Check user session
+        checkUserSession()
+
+        // Load user profile
+        loadUserProfile()
+
+
+        // Setup logout button
+        binding.logoutBtn.setOnClickListener {
+            logoutUser()
         }
 
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            binding = ActivityMainBinding.inflate(layoutInflater)
-            enableEdgeToEdge()
-            setContentView(binding.root)
+        // Setup UI
+        initBanner()
+        initTopMovies()
+        initUpcoming()
+    }
 
-            database = FirebaseDatabase.getInstance()
+    private fun checkUserSession() {
+        val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val firebaseUid = sharedPref.getString("firebaseUid", null)
 
-            initBanner()
-            initTopMovies()
-            initUpcoming()
+        if (firebaseUid == null) {
+            // User not logged in, go to LoginActivity
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        }
+    }
 
+    private fun loadUserProfile() {
+        val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val username = sharedPref.getString("username", "User")
+
+        // Handle "null" string case
+        val displayName = if (username.isNullOrEmpty() || username == "null") "User" else username
+        binding.textView3.text = "Hello $displayName"
+    }
+
+    private fun logoutUser() {
+        // Sign out from Firebase
+        firebaseAuth.signOut()
+
+        // Clear SharedPreferences
+        val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        sharedPref.edit().apply {
+            clear()
+            apply()
         }
 
+        // Go to LoginActivity
+        startActivity(Intent(this, LoginActivity::class.java))
+        finish()
+    }
 
 
         private fun initTopMovies() {
@@ -131,7 +181,7 @@ import kotlin.math.abs
         }
 
         private fun initUpcoming() {
-            val myRef : DatabaseReference = database.getReference("Upcomming")
+            val myRef : DatabaseReference = database.getReference("Upcoming")
             binding.progressBarUpcoming.visibility = View.VISIBLE
             val items = ArrayList<Film>()
 
@@ -164,3 +214,4 @@ import kotlin.math.abs
             })
         }
     }
+
