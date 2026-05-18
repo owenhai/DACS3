@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
+import com.example.dacs3.R
 import com.example.dacs3.adapter.FilmListAdapter
 import com.example.dacs3.adapter.SliderAdapter
 import com.example.dacs3.databinding.ActivityMainBinding
@@ -53,6 +54,21 @@ class MainActivity : AppCompatActivity() {
         // Load user profile
         loadUserProfile()
 
+        // Setup "See All" buttons
+        binding.seeAllTopMovies.setOnClickListener {
+            startActivity(Intent(this, FilmsListActivity::class.java).apply {
+                putExtra("type", "Items")
+            })
+        }
+
+        binding.seeAllUpcomingMovies.setOnClickListener {
+            startActivity(Intent(this, FilmsListActivity::class.java).apply {
+                putExtra("type", "Upcoming")
+            })
+        }
+
+        // Setup Explore tab highlight
+        binding.bottomNavigation.setItemSelected(R.id.explorer, true)
 
         // Setup logout button
         binding.logoutBtn.setOnClickListener {
@@ -123,7 +139,7 @@ class MainActivity : AppCompatActivity() {
                                     LinearLayoutManager.HORIZONTAL,
                                     false
                                 )
-                            binding.recyclerViewTopMovies.adapter = FilmListAdapter(items)
+                            binding.recyclerViewTopMovies.adapter = FilmListAdapter(items, false)
                         }
                     }
                     binding.progressBarTopMovies.visibility = View.GONE
@@ -181,37 +197,50 @@ class MainActivity : AppCompatActivity() {
         }
 
         private fun initUpcoming() {
-            val myRef : DatabaseReference = database.getReference("Upcoming")
+            loadUpcoming("Upcoming", fallbackToLegacy = true)
+        }
+
+        private fun loadUpcoming(path: String, fallbackToLegacy: Boolean) {
+            val myRef: DatabaseReference = database.getReference(path)
             binding.progressBarUpcoming.visibility = View.VISIBLE
             val items = ArrayList<Film>()
 
             myRef.addListenerForSingleValueEvent(object : ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    if(snapshot.exists()){
+                    if (snapshot.exists()) {
                         for (i in snapshot.children){
                             val item = i.getValue(Film::class.java)
                             if(item != null){
                                 items.add(item)
                             }
                         }
-                        if(items.isNotEmpty()){
-                            binding.recyclerViewUpcoming.layoutManager =
-                                LinearLayoutManager(
-                                    this@MainActivity,
-                                    LinearLayoutManager.HORIZONTAL,
-                                    false
-                                )
-                            binding.recyclerViewUpcoming.adapter = FilmListAdapter(items)
-                        }
                     }
-                    binding.progressBarUpcoming.visibility = View.GONE
+
+                    if (items.isNotEmpty()) {
+                        binding.recyclerViewUpcoming.layoutManager =
+                            LinearLayoutManager(
+                                this@MainActivity,
+                                LinearLayoutManager.HORIZONTAL,
+                                false
+                            )
+                        binding.recyclerViewUpcoming.adapter = FilmListAdapter(items, false)
+                        binding.progressBarUpcoming.visibility = View.GONE
+                        return
+                    }
+
+                    if (fallbackToLegacy && path == "Upcoming") {
+                        loadUpcoming("Upcomming", fallbackToLegacy = false)
+                    } else {
+                        binding.progressBarUpcoming.visibility = View.GONE
+                    }
                 }
 
                 override fun onCancelled(error: DatabaseError){
-
+                    binding.progressBarUpcoming.visibility = View.GONE
+                    Toast.makeText(this@MainActivity, "Upcoming load failed: ${error.message}", Toast.LENGTH_SHORT).show()
                 }
-
             })
         }
     }
+
 

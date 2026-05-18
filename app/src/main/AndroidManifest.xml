@@ -35,6 +35,9 @@
         <activity
             android:name=".activity.RegisterActivity"
             android:exported="true" />
+        <activity
+            android:name=".activity.FilmsListActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
