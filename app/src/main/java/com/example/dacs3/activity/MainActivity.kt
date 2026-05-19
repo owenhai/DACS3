@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
+import com.bumptech.glide.Glide
 import com.example.dacs3.R
 import com.example.dacs3.adapter.FilmListAdapter
 import com.example.dacs3.adapter.SliderAdapter
@@ -79,12 +80,10 @@ class MainActivity : AppCompatActivity() {
                 R.id.explorer -> {
                     // Stay on Explore
                 }
+                R.id.profile -> {
+                    startActivity(Intent(this, ProfileActivity::class.java))
+                }
             }
-        }
-
-        // Setup logout button
-        binding.logoutBtn.setOnClickListener {
-            logoutUser()
         }
 
         // Setup UI
@@ -96,6 +95,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         binding.bottomNavigation.setItemSelected(R.id.explorer, true)
+        loadUserProfile()
     }
 
     private fun checkUserSession() {
@@ -112,28 +112,25 @@ class MainActivity : AppCompatActivity() {
     private fun loadUserProfile() {
         val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val username = sharedPref.getString("username", "User")
+        val customUserId = sharedPref.getString("customUserId", null)
 
         // Handle "null" string case
         val displayName = if (username.isNullOrEmpty() || username == "null") "User" else username
         binding.textView3.text = "Hello $displayName"
-    }
 
-    private fun logoutUser() {
-        // Sign out from Firebase
-        firebaseAuth.signOut()
-
-        // Clear SharedPreferences
-        val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        sharedPref.edit().apply {
-            clear()
-            apply()
+        if (customUserId != null) {
+            database.getReference("Users").child(customUserId).child("profileImage").get().addOnSuccessListener {
+                val imageUrl = it.value?.toString()
+                if (!imageUrl.isNullOrEmpty()) {
+                    Glide.with(this)
+                        .load(imageUrl)
+                        .placeholder(R.drawable.profile)
+                        .circleCrop()
+                        .into(binding.imageView2)
+                }
+            }
         }
-
-        // Go to LoginActivity
-        startActivity(Intent(this, LoginActivity::class.java))
-        finish()
     }
-
 
         private fun initTopMovies() {
             val myRef : DatabaseReference = database.getReference("Items")
@@ -259,9 +256,4 @@ class MainActivity : AppCompatActivity() {
             })
         }
     }
-
-
-
-
-
 
