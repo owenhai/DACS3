@@ -1,6 +1,8 @@
 package com.example.dacs3.activity
 
 import android.content.Intent
+import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.renderscript.RenderScript
 import android.view.ViewGroup
@@ -17,9 +19,15 @@ import com.example.dacs3.R
 import com.example.dacs3.adapter.CastListAdapter
 import com.example.dacs3.databinding.ActivityDetailFilmBinding
 import eightbitlab.com.blurview.RenderScriptBlur
+import com.example.dacs3.model.Film
+import com.google.firebase.database.FirebaseDatabase
+import android.widget.Toast
 
 class DetailFilmActivity : AppCompatActivity() {
     private lateinit var binding: com.example.dacs3.databinding.ActivityDetailFilmBinding
+    private val database = FirebaseDatabase.getInstance()
+    private var isFavourite = false
+    private var favouriteKey = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,5 +90,51 @@ class DetailFilmActivity : AppCompatActivity() {
             intent.putExtra("film", film)
             startActivity(intent)
         }
+
+        val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val customUserId = sharedPref.getString("customUserId", null)
+        val favouritesRef = customUserId?.let {
+            database.getReference("Users").child(it).child("favorites")
+        }
+
+        favouriteKey = buildFavoriteKey(film)
+        favouritesRef?.child(favouriteKey)?.get()?.addOnSuccessListener { snapshot ->
+            isFavourite = snapshot.exists()
+            updateBookmarkIcon()
+        }
+
+        binding.bookmarkBtn.setOnClickListener {
+            if (favouritesRef == null) {
+                Toast.makeText(this, "Please login to use favourites", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (isFavourite) {
+                favouritesRef.child(favouriteKey).removeValue().addOnSuccessListener {
+                    isFavourite = false
+                    updateBookmarkIcon()
+                    Toast.makeText(this, "Removed from favourites", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                favouritesRef.child(favouriteKey).setValue(film).addOnSuccessListener {
+                    isFavourite = true
+                    updateBookmarkIcon()
+                    Toast.makeText(this, "Added to favourites", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun updateBookmarkIcon() {
+        if (isFavourite) {
+            binding.bookmarkBtn.setColorFilter(Color.YELLOW)
+        } else {
+            binding.bookmarkBtn.clearColorFilter()
+        }
+    }
+
+    private fun buildFavoriteKey(film: Film): String {
+        val raw = film.Title ?: film.Poster ?: "film"
+        return raw.replace(Regex("[.#$\\[\\]]"), "_")
     }
 }

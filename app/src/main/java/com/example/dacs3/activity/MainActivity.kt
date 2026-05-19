@@ -69,6 +69,18 @@ class MainActivity : AppCompatActivity() {
 
         // Setup Explore tab highlight
         binding.bottomNavigation.setItemSelected(R.id.explorer, true)
+        binding.bottomNavigation.setOnItemSelectedListener { id ->
+            when (id) {
+                R.id.favourites -> {
+                    startActivity(Intent(this, FilmsListActivity::class.java).apply {
+                        putExtra("type", "Favorites")
+                    })
+                }
+                R.id.explorer -> {
+                    // Stay on Explore
+                }
+            }
+        }
 
         // Setup logout button
         binding.logoutBtn.setOnClickListener {
@@ -79,6 +91,11 @@ class MainActivity : AppCompatActivity() {
         initBanner()
         initTopMovies()
         initUpcoming()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.bottomNavigation.setItemSelected(R.id.explorer, true)
     }
 
     private fun checkUserSession() {
@@ -242,5 +259,9 @@ class MainActivity : AppCompatActivity() {
             })
         }
     }
+
+
+
+
 
 

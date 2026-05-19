@@ -34,19 +34,13 @@ class FilmsListActivity : AppCompatActivity() {
         setupHeader(type)
         setupSearch()
         loadFilms(type)
-
-        val type1 = intent.getStringExtra("type1") ?: "Upcomming"
-        setupRecyclerView()
-        setupHeader(type1)
-        setupSearch()
-        loadFilms(type1)
     }
 
     private fun setupHeader(type: String) {
-        binding.titleFilmsList.text = if (type == "Upcoming") {
-            "Upcoming Movies"
-        } else {
-            "Top Movies"
+        binding.titleFilmsList.text = when (type) {
+            "Upcoming" -> "Upcoming Movies"
+            "Favorites" -> "Favourite Movies"
+            else -> "Top Movies"
         }
         binding.backBtn.setOnClickListener { finish() }
     }
@@ -89,7 +83,44 @@ class FilmsListActivity : AppCompatActivity() {
         binding.progressBarFilmsList.visibility = View.VISIBLE
         allItems.clear()
 
+        if (type == "Favorites") {
+            loadFavorites()
+            return
+        }
+
         database.getReference(type)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        for (child in snapshot.children) {
+                            val item = child.getValue(Film::class.java)
+                            if (item != null) {
+                                allItems.add(item)
+                            }
+                        }
+                    }
+                    adapter.updateItems(allItems)
+                    binding.progressBarFilmsList.visibility = View.GONE
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    binding.progressBarFilmsList.visibility = View.GONE
+                    Toast.makeText(this@FilmsListActivity, "Load failed: ${error.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+    private fun loadFavorites() {
+        val sharedPref = getSharedPreferences("UserPrefs", MODE_PRIVATE)
+        val customUserId = sharedPref.getString("customUserId", null)
+
+        if (customUserId.isNullOrEmpty()) {
+            binding.progressBarFilmsList.visibility = View.GONE
+            Toast.makeText(this, "Please login to view favourites", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        database.getReference("Users").child(customUserId).child("favorites")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
