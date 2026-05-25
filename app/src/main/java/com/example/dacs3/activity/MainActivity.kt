@@ -55,6 +55,9 @@ class MainActivity : AppCompatActivity() {
         // Load user profile
         loadUserProfile()
 
+        // Check for Admin privileges
+        checkAdminStatus()
+
         // Setup "See All" buttons
         binding.seeAllTopMovies.setOnClickListener {
             startActivity(Intent(this, FilmsListActivity::class.java).apply {
@@ -76,6 +79,9 @@ class MainActivity : AppCompatActivity() {
                     startActivity(Intent(this, FilmsListActivity::class.java).apply {
                         putExtra("type", "Favorites")
                     })
+                }
+                R.id.cart -> {
+                    startActivity(Intent(this, TicketListActivity::class.java))
                 }
                 R.id.explorer -> {
                     // Stay on Explore
@@ -109,25 +115,48 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun checkAdminStatus() {
+        val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val permission = sharedPref.getString("permission", "user")
+
+        // adminBtn has been removed from layout, so we no longer need to update it here.
+        // The Admin Dashboard can still be accessed via the Profile screen.
+    }
+
     private fun loadUserProfile() {
         val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val username = sharedPref.getString("username", "User")
         val customUserId = sharedPref.getString("customUserId", null)
 
-        // Handle "null" string case
-        val displayName = if (username.isNullOrEmpty() || username == "null") "User" else username
-        binding.textView3.text = "Hello $displayName"
-
         if (customUserId != null) {
-            database.getReference("Users").child(customUserId).child("profileImage").get().addOnSuccessListener {
-                val imageUrl = it.value?.toString()
-                if (!imageUrl.isNullOrEmpty()) {
-                    Glide.with(this)
-                        .load(imageUrl)
-                        .placeholder(R.drawable.profile)
-                        .circleCrop()
-                        .into(binding.imageView2)
+            database.getReference("Users").child(customUserId).get().addOnSuccessListener { snapshot ->
+                if (snapshot.exists()) {
+                    val username = snapshot.child("username").value?.toString() ?: "User"
+                    val permission = snapshot.child("permission").value?.toString() ?: "user"
+                    val profileImage = snapshot.child("profileImage").value?.toString()
+
+                    // Sync to SharedPreferences
+                    sharedPref.edit().apply {
+                        putString("username", username)
+                        putString("permission", permission)
+                        apply()
+                    }
+
+                    // Update UI
+                    binding.textView3.text = "Hello $username"
+                    checkAdminStatus()
+
+                    if (!profileImage.isNullOrEmpty()) {
+                        Glide.with(this)
+                            .load(profileImage)
+                            .placeholder(R.drawable.profile)
+                            .circleCrop()
+                            .into(binding.imageView2)
+                    }
                 }
+            }.addOnFailureListener {
+                // Fallback to local prefs if network fails
+                val username = sharedPref.getString("username", "User")
+                binding.textView3.text = "Hello $username"
             }
         }
     }
@@ -256,4 +285,5 @@ class MainActivity : AppCompatActivity() {
             })
         }
     }
+
 

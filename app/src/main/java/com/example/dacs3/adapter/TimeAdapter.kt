@@ -6,10 +6,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.dacs3.R
 import com.example.dacs3.databinding.ItemTimeBinding
 
-class TimeAdapter(private val timeSlots : List<String>) :
+class TimeAdapter(private val timeSlots : List<String>, private val onTimeSelected: (String) -> Unit) :
     RecyclerView.Adapter<TimeAdapter.ViewHolder>() {
-    private var selectedPosition = -1
+    private var selectedPosition = 0
     private var lastselectedPosition = -1
+
+    fun getSelectedTime(): String? {
+        return if (selectedPosition != -1) timeSlots[selectedPosition] else null
+    }
+
     inner class ViewHolder(private val binding : ItemTimeBinding) :
     RecyclerView.ViewHolder(binding.root){
         fun bind(time : String ){
@@ -26,13 +31,13 @@ class TimeAdapter(private val timeSlots : List<String>) :
                 }
 
                 binding.root.setOnClickListener {
-                    val position = position
+                    val position = adapterPosition
                     if(position != RecyclerView.NO_POSITION){
                         lastselectedPosition = selectedPosition
                         selectedPosition = position
                         notifyItemChanged(lastselectedPosition)
                         notifyItemChanged(selectedPosition)
-
+                        onTimeSelected(time)
                     }
                 }
 

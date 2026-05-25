@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,7 +15,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DACS3">
         <activity
+            android:name=".activity.AdminDashboardActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.SeatListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.BillActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.StaffScanActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:screenOrientation="fullSensor"
+            tools:replace="screenOrientation" />
+        <activity
+            android:name=".activity.TicketListActivity"
             android:exported="false" />
         <activity
             android:name=".activity.DetailFilmActivity"
@@ -40,6 +59,27 @@
             android:exported="false" />
         <activity
             android:name=".activity.ProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.AdminFilmsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.AdminEditFilmActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.AdminRevenueActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.AdminTicketsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.AdminSchedulesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.AdminMovieSchedulesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.AdminSeatManagerActivity"
             android:exported="false" />
     </application>
 

@@ -10,7 +10,7 @@ data class Film(
     var Trailer : String? = null,
     var Imdb : Int = 0,
     var Year : Int = 0,
-    var price : Double = 0.0,
+    var Price : Double = 0.0,
     var Genre : ArrayList<String> = ArrayList(),
     var Casts : ArrayList<Cast> = ArrayList(),
 ): Serializable

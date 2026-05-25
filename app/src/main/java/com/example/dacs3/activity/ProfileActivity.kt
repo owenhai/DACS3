@@ -58,6 +58,10 @@ class ProfileActivity : AppCompatActivity() {
         binding.logoutBtn.setOnClickListener {
             logoutUser()
         }
+
+        binding.adminDashboardBtn.setOnClickListener {
+            startActivity(Intent(this, AdminDashboardActivity::class.java))
+        }
     }
 
     private fun logoutUser() {
@@ -89,10 +93,15 @@ class ProfileActivity : AppCompatActivity() {
                     val name = snapshot.child("username").value.toString()
                     val email = snapshot.child("email").value.toString()
                     val profileImg = snapshot.child("profileImage").value?.toString()
+                    val permission = snapshot.child("permission").value?.toString()
 
                     binding.displayNameEt.setText(name)
                     binding.emailEt.setText(email)
                     binding.usernameTv.text = name
+
+                    if (permission == "admin") {
+                        binding.adminDashboardBtn.visibility = android.view.View.VISIBLE
+                    }
 
                     if (!profileImg.isNullOrEmpty()) {
                         Glide.with(this@ProfileActivity)

@@ -71,8 +71,9 @@ class LoginActivity : AppCompatActivity() {
                                         val customUserId = userSnapshot.child("customUserId").value?.toString() ?: "User"
                                         val username = userSnapshot.child("username").value?.toString() ?: "User"
                                         val savedPassword = userSnapshot.child("password").value?.toString() ?: ""
+                                        val permission = userSnapshot.child("permission").value?.toString() ?: "user"
 
-                                        Log.d("LoginActivity", "Found user: $customUserId, $username")
+                                        Log.d("LoginActivity", "Found user: $customUserId, $username, permission: $permission")
 
                                         // Save to SharedPreferences
                                         val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
@@ -82,6 +83,7 @@ class LoginActivity : AppCompatActivity() {
                                             putString("customUserId", customUserId)
                                             putString("firebaseUid", firebaseUid)
                                             putString("password", savedPassword)
+                                            putString("permission", permission)
                                             if (binding.rememberCheckBox.isChecked) {
                                                 putBoolean("rememberMe", true)
                                             }
@@ -139,6 +141,7 @@ class LoginActivity : AppCompatActivity() {
                                 putString("customUserId", customUserId)
                                 putString("firebaseUid", firebaseUid)
                                 putString("password", "unknown")
+                                putString("permission", "user")
                                 if (binding.rememberCheckBox.isChecked) {
                                     putBoolean("rememberMe", true)
                                 }
@@ -183,4 +186,3 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 }
-

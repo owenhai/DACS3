@@ -1,0 +1,16 @@
+package com.example.dacs3.model
+
+import java.io.Serializable
+
+data class Ticket(
+    val ticketId: String = "",
+    val movieTitle: String = "",
+    val showDate: String = "",
+    val showTime: String = "",
+    val seatNo: String = "",
+    val totalPrice: Double = 0.0,
+    var isCheckedIn: Boolean = false,
+    var status: String = "Pending", // "Pending", "Paid", "Used"
+    val userId: String = "",
+    val createdAt: Long = System.currentTimeMillis()
+) : Serializable

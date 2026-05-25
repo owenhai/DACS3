@@ -158,6 +158,19 @@
                 android:textColor="@color/orange"
                 android:textSize="16sp" />
 
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/adminDashboardBtn"
+                android:layout_width="200dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="16dp"
+                android:layout_gravity="center"
+                android:background="@drawable/green_bg"
+                android:text="Admin Dashboard"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:visibility="gone" />
+
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

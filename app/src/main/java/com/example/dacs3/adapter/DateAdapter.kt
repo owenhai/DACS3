@@ -6,10 +6,15 @@ import com.example.dacs3.R
 import com.example.dacs3.databinding.ItemDateBinding
 import kotlin.time.TimedValue
 
-class DateAdapter(private val timeSlots : List<String>) :
+class DateAdapter(private val timeSlots : List<String>, private val onDateSelected: (String) -> Unit) :
     RecyclerView.Adapter<DateAdapter.ViewHolder>() {
-    private var selectedPosition = -1
+    private var selectedPosition = 0
     private var lastselectedPosition = -1
+
+    fun getSelectedDate(): String? {
+        return if (selectedPosition != -1) timeSlots[selectedPosition] else null
+    }
+
     inner class ViewHolder(private val binding : ItemDateBinding) :
     RecyclerView.ViewHolder(binding.root){
         fun bind(date : String ){
@@ -30,13 +35,13 @@ class DateAdapter(private val timeSlots : List<String>) :
                 }
 
                 binding.root.setOnClickListener {
-                    val position = position
+                    val position = adapterPosition
                     if(position != RecyclerView.NO_POSITION){
                         lastselectedPosition = selectedPosition
                         selectedPosition = position
                         notifyItemChanged(lastselectedPosition)
                         notifyItemChanged(selectedPosition)
-
+                        onDateSelected(date)
                     }
                 }
             }

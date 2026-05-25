@@ -57,4 +57,6 @@ dependencies {
     implementation ("com.github.bumptech.glide:glide:4.16.0")
     implementation ("com.github.ismaeldivita:chip-navigation-bar:1.4.0")
     implementation ("com.github.Dimezis:BlurView:version-2.0.3")
+    implementation ("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation ("com.google.zxing:core:3.4.1")
 }
