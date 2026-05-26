@@ -74,7 +74,10 @@ class AdminFilmsActivity : AppCompatActivity() {
                 allFilms.clear()
                 for (child in snapshot.children) {
                     val film = child.getValue(Film::class.java)
-                    film?.let { allFilms.add(it) }
+                    film?.let {
+                        it.key = child.key // Capture the actual database key
+                        allFilms.add(it)
+                    }
                 }
                 adapter.updateData(allFilms)
                 binding.progressBar.visibility = View.GONE
@@ -95,13 +98,23 @@ class AdminFilmsActivity : AppCompatActivity() {
     private fun showDeleteConfirm(film: Film) {
         AlertDialog.Builder(this)
             .setTitle("Delete Movie")
-            .setMessage("Are you sure you want to delete '${film.Title}'?")
+            .setMessage("Are you sure you want to delete '${film.Title}'? This will remove it from Top Movies and Upcoming.")
             .setPositiveButton("Delete") { _, _ ->
-                film.Title?.let { title ->
-                    database.getReference("Items").child(title).removeValue()
-                        .addOnSuccessListener {
-                            Toast.makeText(this, "Deleted", Toast.LENGTH_SHORT).show()
-                        }
+                val filmKey = film.key ?: film.Title
+                if (filmKey != null) {
+                    // 1. Delete from Items (Top Movies)
+                    database.getReference("Items").child(filmKey).removeValue()
+
+                    // 2. Also try to delete from Upcoming/Upcomming in case it's duplicated there
+                    database.getReference("Upcoming").child(filmKey).removeValue()
+                    database.getReference("Upcomming").child(filmKey).removeValue()
+
+                    // 3. Delete schedules associated with this movie title
+                    film.Title?.let { title ->
+                        database.getReference("Schedules").child(title).removeValue()
+                    }
+
+                    Toast.makeText(this, "Movie deleted from all sections", Toast.LENGTH_SHORT).show()
                 }
             }
             .setNegativeButton("Cancel", null)

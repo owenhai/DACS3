@@ -89,12 +89,14 @@ class FilmsListActivity : AppCompatActivity() {
         }
 
         database.getReference(type)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
+            .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
+                    allItems.clear()
                     if (snapshot.exists()) {
                         for (child in snapshot.children) {
                             val item = child.getValue(Film::class.java)
                             if (item != null) {
+                                item.key = child.key
                                 allItems.add(item)
                             }
                         }
@@ -121,8 +123,9 @@ class FilmsListActivity : AppCompatActivity() {
         }
 
         database.getReference("Users").child(customUserId).child("favorites")
-            .addListenerForSingleValueEvent(object : ValueEventListener {
+            .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
+                    allItems.clear()
                     if (snapshot.exists()) {
                         for (child in snapshot.children) {
                             val item = child.getValue(Film::class.java)

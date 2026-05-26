@@ -53,8 +53,9 @@ class AdminMovieSchedulesActivity : AppCompatActivity() {
                          val sb = StringBuilder()
                          for (child in snapshot.children) {
                              val date = child.child("date").value?.toString() ?: child.key ?: ""
-                             val times = child.child("timeSlots").value?.toString() ?: ""
-                             sb.append("📅 $date\n⏰ $times\n\n")
+                             val timesList = (child.child("timeSlots").value as? List<*>)?.joinToString(", ") ?: ""
+                             sb.append("📅 $date\n⏰ $timesList\n")
+                             sb.append("----------------------------\n")
                          }
                          binding.currentSchedulesTxt.text = sb.toString()
                      } else {
@@ -74,11 +75,15 @@ class AdminMovieSchedulesActivity : AppCompatActivity() {
         builder.setTitle("Add Schedule for $movieTitle")
 
         val movieDuration = parseDuration(film?.Time)
-        builder.setMessage("Movie Duration: $movieDuration mins. End time will include a 5-min delay.")
 
         val layout = LinearLayout(this)
         layout.orientation = LinearLayout.VERTICAL
         layout.setPadding(60, 40, 60, 10)
+
+        val durationInfo = android.widget.TextView(this)
+        durationInfo.text = "Movie Duration: $movieDuration mins (+5m delay)"
+        durationInfo.setTextColor(Color.GRAY)
+        layout.addView(durationInfo)
 
         val dateInput = EditText(this)
         dateInput.hint = "Date (e.g. Mon/25/May)"
@@ -87,7 +92,7 @@ class AdminMovieSchedulesActivity : AppCompatActivity() {
         layout.addView(dateInput)
 
         val timeInput = EditText(this)
-        timeInput.hint = "Time Slots (comma separated, e.g. 09:00 AM, 02:00 PM)"
+        timeInput.hint = "Start Times (e.g. 09:00 AM, 02:30 PM)"
         timeInput.setHintTextColor(Color.GRAY)
         timeInput.setTextColor(Color.BLACK)
         layout.addView(timeInput)
@@ -108,8 +113,21 @@ class AdminMovieSchedulesActivity : AppCompatActivity() {
             }
         }
 
+        builder.setNeutralButton("CLEAR ALL") { _, _ ->
+            deleteSchedules()
+        }
+
         builder.setNegativeButton("Cancel", null)
         builder.show()
+    }
+
+    private fun deleteSchedules() {
+        movieTitle?.let { title ->
+            database.getReference("Schedules").child(title).removeValue()
+                .addOnSuccessListener {
+                    Toast.makeText(this, "All schedules cleared for this movie", Toast.LENGTH_SHORT).show()
+                }
+        }
     }
 
     private fun parseDuration(timeStr: String?): Int {
@@ -120,20 +138,29 @@ class AdminMovieSchedulesActivity : AppCompatActivity() {
 
     private fun calculateEndTime(startTimeStr: String, durationMins: Int): String {
         try {
-            // Expected format: "09:00 AM" or "21:00"
-            val format = if (startTimeStr.contains("AM", ignoreCase = true) || startTimeStr.contains("PM", ignoreCase = true)) {
-                java.text.SimpleDateFormat("hh:mm a", java.util.Locale.US)
+            // Expected format: "09:00 AM", "9:00 AM", or "21:00"
+            val cleanStartTime = startTimeStr.uppercase().trim()
+            val format = if (cleanStartTime.contains("AM") || cleanStartTime.contains("PM")) {
+                // Support both 09:00 AM and 9:00 AM
+                if (cleanStartTime.indexOf(":") == 1) {
+                    java.text.SimpleDateFormat("h:mm a", java.util.Locale.US)
+                } else {
+                    java.text.SimpleDateFormat("hh:mm a", java.util.Locale.US)
+                }
             } else {
                 java.text.SimpleDateFormat("HH:mm", java.util.Locale.US)
             }
 
-            val date = format.parse(startTimeStr)
+            val date = format.parse(cleanStartTime)
             val calendar = java.util.Calendar.getInstance()
             calendar.time = date
             calendar.add(java.util.Calendar.MINUTE, durationMins + 5) // Add duration + 5 min delay
 
-            val endTimeStr = format.format(calendar.time)
-            return "$startTimeStr - $endTimeStr"
+            val outputFormat = java.text.SimpleDateFormat("h:mm a", java.util.Locale.US)
+            val endTimeStr = outputFormat.format(calendar.time)
+            val startTimeFormatted = outputFormat.format(date)
+
+            return "$startTimeFormatted - $endTimeStr"
         } catch (e: Exception) {
             return startTimeStr // Return raw if parsing fails
         }

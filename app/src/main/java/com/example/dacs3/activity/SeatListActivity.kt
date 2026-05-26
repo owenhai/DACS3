@@ -131,7 +131,7 @@ class SeatListActivity : AppCompatActivity() {
                     val df = java.text.DecimalFormat("#,###")
                     binding.priceTxt.text = "$${df.format(price)}"
                 }
-            })
+            }, currentSelectedList) // Pass existing selections back info the adapter
             seatRecyclerView.adapter = seatAdapter
             seatRecyclerView.isNestedScrollingEnabled = false
         }
@@ -204,7 +204,7 @@ class SeatListActivity : AppCompatActivity() {
 
     private fun resetSelection() {
         binding.numberSelectedTxt.text = "0 Seats Selected"
-        binding.priceTxt.text = "$0.00"
+        binding.priceTxt.text = "$0"
         price = 0.0
         number = 0
         selectedSeatNames = ""

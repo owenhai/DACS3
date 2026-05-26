@@ -13,4 +13,5 @@ data class Film(
     var Price : Double = 0.0,
     var Genre : ArrayList<String> = ArrayList(),
     var Casts : ArrayList<Cast> = ArrayList(),
+    var key: String? = null // Database key for deletion/updates
 ): Serializable

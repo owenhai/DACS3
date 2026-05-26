@@ -164,14 +164,15 @@ class MainActivity : AppCompatActivity() {
         private fun initTopMovies() {
             val myRef : DatabaseReference = database.getReference("Items")
             binding.progressBarTopMovies.visibility = View.VISIBLE
-            val items = ArrayList<Film>()
 
-            myRef.addListenerForSingleValueEvent(object : ValueEventListener{
+            myRef.addValueEventListener(object : ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
+                    val items = ArrayList<Film>()
                     if(snapshot.exists()){
                         for (i in snapshot.children){
                             val item = i.getValue(Film::class.java)
                             if(item != null){
+                                item.key = i.key
                                 items.add(item)
                             }
                         }
@@ -183,15 +184,17 @@ class MainActivity : AppCompatActivity() {
                                     false
                                 )
                             binding.recyclerViewTopMovies.adapter = FilmListAdapter(items, false)
+                        } else {
+                            // If list becomes empty, clear adapter
+                            binding.recyclerViewTopMovies.adapter = FilmListAdapter(arrayListOf(), false)
                         }
                     }
                     binding.progressBarTopMovies.visibility = View.GONE
                 }
 
                 override fun onCancelled(p0: DatabaseError) {
-
+                    binding.progressBarTopMovies.visibility = View.GONE
                 }
-
             })
         }
 
@@ -246,14 +249,15 @@ class MainActivity : AppCompatActivity() {
         private fun loadUpcoming(path: String, fallbackToLegacy: Boolean) {
             val myRef: DatabaseReference = database.getReference(path)
             binding.progressBarUpcoming.visibility = View.VISIBLE
-            val items = ArrayList<Film>()
 
-            myRef.addListenerForSingleValueEvent(object : ValueEventListener{
+            myRef.addValueEventListener(object : ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
+                    val items = ArrayList<Film>()
                     if (snapshot.exists()) {
                         for (i in snapshot.children){
                             val item = i.getValue(Film::class.java)
                             if(item != null){
+                                item.key = i.key
                                 items.add(item)
                             }
                         }
@@ -268,13 +272,13 @@ class MainActivity : AppCompatActivity() {
                             )
                         binding.recyclerViewUpcoming.adapter = FilmListAdapter(items, false)
                         binding.progressBarUpcoming.visibility = View.GONE
-                        return
-                    }
-
-                    if (fallbackToLegacy && path == "Upcoming") {
-                        loadUpcoming("Upcomming", fallbackToLegacy = false)
                     } else {
-                        binding.progressBarUpcoming.visibility = View.GONE
+                        if (fallbackToLegacy && path == "Upcoming") {
+                            loadUpcoming("Upcomming", fallbackToLegacy = false)
+                        } else {
+                            binding.recyclerViewUpcoming.adapter = FilmListAdapter(arrayListOf(), false)
+                            binding.progressBarUpcoming.visibility = View.GONE
+                        }
                     }
                 }
 
@@ -285,5 +289,7 @@ class MainActivity : AppCompatActivity() {
             })
         }
     }
+
+
 
 
