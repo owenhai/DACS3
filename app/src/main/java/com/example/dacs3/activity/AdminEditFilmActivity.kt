@@ -37,6 +37,7 @@ class AdminEditFilmActivity : AppCompatActivity() {
             binding.imdbEdit.setText(existingFilm?.Imdb.toString())
             binding.yearEdit.setText(existingFilm?.Year.toString())
             binding.priceEdit.setText(existingFilm?.Price.toString())
+            binding.timeEdit.setText(existingFilm?.Time)
             binding.genreEdit.setText(existingFilm?.Genre?.joinToString(", "))
         } else {
             binding.titleTxt.text = "Add New Movie"
@@ -51,6 +52,7 @@ class AdminEditFilmActivity : AppCompatActivity() {
         val imdb = binding.imdbEdit.text.toString().toIntOrNull() ?: 0
         val year = binding.yearEdit.text.toString().toIntOrNull() ?: 0
         val price = binding.priceEdit.text.toString().toDoubleOrNull() ?: 0.0
+        val time = binding.timeEdit.text.toString().trim()
         val genres = ArrayList(binding.genreEdit.text.toString().split(",").map { it.trim() }.filter { it.isNotEmpty() })
 
         if (title.isEmpty()) {
@@ -66,6 +68,7 @@ class AdminEditFilmActivity : AppCompatActivity() {
             Imdb = imdb,
             Year = year,
             Price = price,
+            Time = time,
             Genre = genres
         )
 

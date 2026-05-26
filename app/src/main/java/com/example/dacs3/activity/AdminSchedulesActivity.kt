@@ -36,7 +36,7 @@ class AdminSchedulesActivity : AppCompatActivity() {
         binding.movieListRecyclerView.adapter = AdminFilmAdapter(allMovies,
             onEditClick = { film ->
                 val intent = Intent(this, AdminMovieSchedulesActivity::class.java)
-                intent.putExtra("movieTitle", film.Title)
+                intent.putExtra("film", film)
                 startActivity(intent)
             },
             onDeleteClick = {}

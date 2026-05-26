@@ -51,7 +51,7 @@ class AdminSeatManagerActivity : AppCompatActivity() {
                 if (snapshot.exists()) {
                     for (child in snapshot.children) {
                         val d = child.child("date").value?.toString() ?: ""
-                        val t = child.child("timeSlots").value as? List<String> ?: listOf()
+                        val t = (child.child("timeSlots").value as? List<*>)?.mapNotNull { it?.toString() } ?: listOf()
                         if (d.isNotEmpty()) {
                             dates.add(d)
                             calendarMap[d] = t
@@ -60,10 +60,10 @@ class AdminSeatManagerActivity : AppCompatActivity() {
                 }
 
                 if (dates.isEmpty()) {
-                    // Fallback to defaults
-                    val defaultDates = generateDefaultDates()
-                    val defaultTimes = generateDefaultTimes()
-                    setupAdapters(defaultDates, mapOf(defaultDates[0] to defaultTimes))
+                    // No custom schedules, set empty and show message
+                    binding.dateRecyclerView.adapter = null
+                    binding.timeRecyclerView.adapter = null
+                    Toast.makeText(this@AdminSeatManagerActivity, "No schedule available for this movie", Toast.LENGTH_SHORT).show()
                 } else {
                     setupAdapters(dates, calendarMap)
                 }

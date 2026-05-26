@@ -80,4 +80,4 @@ Từ số 7 tạo 1 cái admin dashboard để quản lý các chức năng trê
    - Admin có thể tạo báo cáo doanh thu dựa trên số lượng vé bán ra, loại vé, và thời gian bán vé để phân tích hiệu suất kinh doanh.
 10. Dữ Liệu Phim
 - Admin có thể xem thống kê về số lượng vé bán ra cho từng phim, doanh thu từ mỗi phim, và đánh giá của người dùng để đưa ra quyết định về việc tiếp tục chiếu phim đó hay không.
-- Thêm data giờ chiếu vào cơ sở dữ liệu để quản lý lịch chiếu chính xác hơn , ví dụ bắt đầu 2h chiếu thì giowf  
+- Thêm data giờ chiếu vào cơ sở dữ liệu để quản lý lịch chiếu chính xác hơn , ví dụ bắt đầu 2h chiếu thì giờ kết thúc sẽ là 5p delay + thời lượng của phim( phim 120p thì kết thúc sẽ là 2h + 120p + 5p delay = 4h5p) để tránh việc trùng lịch chiếu giữa các phim.
