@@ -92,14 +92,29 @@ class BillActivity : AppCompatActivity() {
     }
 
     private fun generateTicketQR() {
-        // This QR contains the ticket ID for staff to scan and verify
-        generateQRCode("TICKET_VALIDATION:${ticket.ticketId}")
+        // Structured content for scannability and quick info display
+        // Format: TICKET_VALIDATION|ID|TITLE|DATE|TIME|SEATS|PRICE
+        val df = java.text.DecimalFormat("#,###")
+        val content = "TICKET_VALIDATION|" +
+                "${ticket.ticketId}|" +
+                "${ticket.movieTitle}|" +
+                "${ticket.showDate}|" +
+                "${ticket.showTime}|" +
+                "${ticket.seatNo}|" +
+                "${df.format(ticket.totalPrice)}"
+
+        generateQRCode(content)
     }
 
     private fun generateQRCode(content: String) {
         val multiFormatWriter = MultiFormatWriter()
         try {
-            val bitMatrix = multiFormatWriter.encode(content, BarcodeFormat.QR_CODE, 512, 512)
+            val hints = mutableMapOf<com.google.zxing.EncodeHintType, Any>()
+            hints[com.google.zxing.EncodeHintType.ERROR_CORRECTION] = com.google.zxing.qrcode.decoder.ErrorCorrectionLevel.H
+            hints[com.google.zxing.EncodeHintType.MARGIN] = 2
+            hints[com.google.zxing.EncodeHintType.CHARACTER_SET] = "UTF-8"
+
+            val bitMatrix = multiFormatWriter.encode(content, BarcodeFormat.QR_CODE, 800, 800, hints)
             val barcodeEncoder = BarcodeEncoder()
             val bitmap: Bitmap = barcodeEncoder.createBitmap(bitMatrix)
             binding.qrCodeImg.setImageBitmap(bitmap)
@@ -115,6 +130,8 @@ class BillActivity : AppCompatActivity() {
                 ticket.status = "Paid"
                 markSeatsAsOccupied()
                 updateStatusUI()
+                // Regenerate the QR code now that it is Paid
+                generateTicketQR()
                 Toast.makeText(this, "Payment Successful!", Toast.LENGTH_SHORT).show()
             }
             .addOnFailureListener {

@@ -9,8 +9,8 @@ import com.example.dacs3.model.Seat
 
 class SeatListAdapter(private val seatList: List<Seat>,
                       private val context : Context,
-                      private val initialSelectedSeats: List<String> = listOf(),
-                      private val selectedSeat : SelectedSeat
+                      private val selectedSeat : SelectedSeat,
+                      private val initialSelectedSeats: List<String> = listOf()
     ) :
     RecyclerView.Adapter<SeatListAdapter.ViewHolder>() {
         private val selectedSeatName = ArrayList<String>().apply {
@@ -49,6 +49,7 @@ class SeatListAdapter(private val seatList: List<Seat>,
             }
         }
         holder.binding.seatTxt.setOnClickListener {
+            val clickedSeatName = seat.name
             when(seat.status){
                 Seat.SeatStatus.AVAILABLE -> {
                     seat.status = Seat.SeatStatus.SELECTED
@@ -63,14 +64,14 @@ class SeatListAdapter(private val seatList: List<Seat>,
                 else -> {}
             }
             val selected = selectedSeatName.joinToString(", ")
-            selectedSeat.Return(selected, selectedSeatName.size)
+            selectedSeat.Return(selected, selectedSeatName.size, clickedSeatName)
         }
     }
 
     override fun getItemCount(): Int = seatList.size
 
     interface SelectedSeat{
-        fun Return(selectedName : String, num : Int)
+        fun Return(selectedName : String, num : Int, clickedName: String)
 
     }
 }

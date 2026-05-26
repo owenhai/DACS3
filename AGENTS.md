@@ -81,3 +81,10 @@ Từ số 7 tạo 1 cái admin dashboard để quản lý các chức năng trê
 10. Dữ Liệu Phim
 - Admin có thể xem thống kê về số lượng vé bán ra cho từng phim, doanh thu từ mỗi phim, và đánh giá của người dùng để đưa ra quyết định về việc tiếp tục chiếu phim đó hay không.
 - Thêm data giờ chiếu vào cơ sở dữ liệu để quản lý lịch chiếu chính xác hơn , ví dụ bắt đầu 2h chiếu thì giờ kết thúc sẽ là 5p delay + thời lượng của phim( phim 120p thì kết thúc sẽ là 2h + 120p + 5p delay = 4h5p) để tránh việc trùng lịch chiếu giữa các phim.
+11. Fix lại QR cho quét được 
+- Sử dụng thư viện QR code phổ biến để tạo và quét QR code.
+- Đảm bảo rằng QR code chứa đủ thông tin cần thiết để xác thực vé, bao gồm `ticketId`, `movieTitle`, `showDate`, và `seatNo`.
+- Khi quét QR code, hệ thống sẽ kiểm tra thông tin trong QR code với cơ sở dữ liệu để xác thực vé và cập nhật trạng thái vé thành "Đã sử dụng" sau khi xác thực thành công.
+- khi quét QR in ra thông tin trong vé phim cho khách hàng xem như tên phim, ngày chiếu, giờ chiếu, số ghế, giá tiền để khách hàng có thể kiểm tra lại thông tin vé của mình trước khi xác nhận sử dụng vé.
+12. Tính năng bổ sung:
+- Khi xác nhận vé xong thì có chức năng print vé ra giấy hoặc gửi vé qua email cho khách hàng để tiện lợi hơn trong việc quản lý vé và tránh mất vé.

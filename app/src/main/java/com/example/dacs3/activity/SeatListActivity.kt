@@ -122,8 +122,8 @@ class SeatListActivity : AppCompatActivity() {
             // unless we specifically want to (e.g. when explicit date/time change)
             // But currently renderSeats is called by the listener which can fire anytime.
 
-            val seatAdapter = SeatListAdapter(seatList, this@SeatListActivity , currentSelectedList, object : SeatListAdapter.SelectedSeat {
-                override fun Return(selectedName : String, num : Int) {
+            val seatAdapter = SeatListAdapter(seatList, this@SeatListActivity , object : SeatListAdapter.SelectedSeat {
+                override fun Return(selectedName : String, num : Int, clickedName: String) {
                     binding.numberSelectedTxt.text = "$num Seats Selected"
                     price = (num * unitPrice)
                     number = num

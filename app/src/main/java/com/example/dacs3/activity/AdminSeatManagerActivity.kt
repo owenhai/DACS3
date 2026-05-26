@@ -130,12 +130,9 @@ class AdminSeatManagerActivity : AppCompatActivity() {
             seatList.add(Seat(status, name))
         }
 
-        val adapter = SeatListAdapter(seatList, this, listOf(), object : SeatListAdapter.SelectedSeat {
-            override fun Return(selectedName: String, num: Int) {
-
-                if (selectedName.isNotEmpty()) {
-                    toggleSeatStatus(selectedName)
-                }
+        val adapter = SeatListAdapter(seatList, this, object : SeatListAdapter.SelectedSeat {
+            override fun Return(selectedName: String, num: Int, clickedName: String) {
+                toggleSeatStatus(clickedName)
             }
         })
         binding.seatRecyclerView.adapter = adapter
