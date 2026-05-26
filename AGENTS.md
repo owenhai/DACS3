@@ -78,3 +78,6 @@ Từ số 7 tạo 1 cái admin dashboard để quản lý các chức năng trê
    - Admin có thể xem danh sách vé đã bán, trạng thái vé (Đã bán, Đã sử dụng, Hủy), và có thể hủy vé nếu cần thiết.
    - Admin có thể quét QR code để xác thực vé tại rạp, cập nhật trạng thái vé thành "Đã sử dụng" sau khi xác thực thành công.
    - Admin có thể tạo báo cáo doanh thu dựa trên số lượng vé bán ra, loại vé, và thời gian bán vé để phân tích hiệu suất kinh doanh.
+10. Dữ Liệu Phim
+- Admin có thể xem thống kê về số lượng vé bán ra cho từng phim, doanh thu từ mỗi phim, và đánh giá của người dùng để đưa ra quyết định về việc tiếp tục chiếu phim đó hay không.
+- Thêm data giờ chiếu vào cơ sở dữ liệu để quản lý lịch chiếu chính xác hơn , ví dụ bắt đầu 2h chiếu thì giowf  

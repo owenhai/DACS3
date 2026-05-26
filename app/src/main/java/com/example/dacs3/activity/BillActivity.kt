@@ -27,7 +27,18 @@ class BillActivity : AppCompatActivity() {
         binding = ActivityBillBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        ticket = intent.getSerializableExtra("ticket") as Ticket
+        val ticketExtra = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            intent.getSerializableExtra("ticket", Ticket::class.java)
+        } else {
+            intent.getSerializableExtra("ticket") as? Ticket
+        }
+
+        if (ticketExtra == null) {
+            Toast.makeText(this, "Error: Ticket data not found", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+        ticket = ticketExtra
 
         setupUI()
         generatePaymentQR()
@@ -39,10 +50,11 @@ class BillActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
+        val df = java.text.DecimalFormat("#,###")
         binding.movieTitleTxt.text = ticket.movieTitle
         binding.dateTimeTxt.text = "${ticket.showDate} | ${ticket.showTime}"
         binding.seatsTxt.text = "Seats: ${ticket.seatNo}"
-        binding.totalPriceTxt.text = "Total: $${String.format("%.2f", ticket.totalPrice)}"
+        binding.totalPriceTxt.text = "Total: $${df.format(ticket.totalPrice)}"
         binding.ticketIdDisplayTxt.text = "ID: ${ticket.ticketId}"
         updateStatusUI()
     }

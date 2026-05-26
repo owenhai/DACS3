@@ -9,10 +9,13 @@ import com.example.dacs3.model.Seat
 
 class SeatListAdapter(private val seatList: List<Seat>,
                       private val context : Context,
+                      private val initialSelectedSeats: List<String> = listOf(),
                       private val selectedSeat : SelectedSeat
     ) :
     RecyclerView.Adapter<SeatListAdapter.ViewHolder>() {
-        private val selectedSeatName = ArrayList<String>()
+        private val selectedSeatName = ArrayList<String>().apply {
+            addAll(initialSelectedSeats)
+        }
     inner class ViewHolder(val binding : ItemSeatBinding) :
         RecyclerView.ViewHolder(binding.root)
 

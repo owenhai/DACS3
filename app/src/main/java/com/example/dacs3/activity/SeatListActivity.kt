@@ -93,36 +93,43 @@ class SeatListActivity : AppCompatActivity() {
 
             val seatList = mutableListOf<Seat>()
             val numberSeats = 81
+            val currentSelectedList = selectedSeatNames.split(", ").filter { it.isNotEmpty() }
+            val selectedSeatsSet = currentSelectedList.toSet()
+
             for (i in 0 until numberSeats) {
                 val row = (i / 7) + 1
                 val col = (i % 7) + 1
                 val seatName = "${('A' + (row - 1))}$col"  // A1, A2, ..., B1, B2, ...
-                val seatStatus = if (occupiedSeats.contains(seatName)) {
-                    Seat.SeatStatus.UNAVAILABLE
-                } else {
-                    Seat.SeatStatus.AVAILABLE
+                val seatStatus = when {
+                    occupiedSeats.contains(seatName) -> Seat.SeatStatus.UNAVAILABLE
+                    selectedSeatsSet.contains(seatName) -> Seat.SeatStatus.SELECTED
+                    else -> Seat.SeatStatus.AVAILABLE
                 }
                 seatList.add(Seat(seatStatus, seatName))
             }
 
-            // Fallback price logic
             val unitPrice = if (film.Price > 0) film.Price else 5.0
 
-            // Reset selection when date/time changes
-            numberSelectedTxt.text = "0 Seats Selected"
-            priceTxt.text = "$0.00"
-            price = 0.0
-            number = 0
-            selectedSeatNames = ""
+            // Update global state and UI to match the current selection
+            // This ensures price is correct even if renderSeats is re-called by Firebase
+            number = currentSelectedList.size
+            price = number * unitPrice
+            val df = java.text.DecimalFormat("#,###")
+            priceTxt.text = "$${df.format(price)}"
+            numberSelectedTxt.text = "$number Seats Selected"
 
-            val seatAdapter = SeatListAdapter(seatList, this@SeatListActivity , object : SeatListAdapter.SelectedSeat {
+            // DO NOT reset price or selection here if they already have values,
+            // unless we specifically want to (e.g. when explicit date/time change)
+            // But currently renderSeats is called by the listener which can fire anytime.
+
+            val seatAdapter = SeatListAdapter(seatList, this@SeatListActivity , currentSelectedList, object : SeatListAdapter.SelectedSeat {
                 override fun Return(selectedName : String, num : Int) {
-                    numberSelectedTxt.text = "$num Seats Selected"
+                    binding.numberSelectedTxt.text = "$num Seats Selected"
                     price = (num * unitPrice)
                     number = num
                     selectedSeatNames = selectedName
-                    val df = DecimalFormat("#,##0.00")
-                    priceTxt.text = "$${df.format(price)}"
+                    val df = java.text.DecimalFormat("#,###")
+                    binding.priceTxt.text = "$${df.format(price)}"
                 }
             })
             seatRecyclerView.adapter = seatAdapter
@@ -140,15 +147,15 @@ class SeatListActivity : AppCompatActivity() {
 
             val movieTitle = (film.Title ?: "Unknown").trim()
             database.getReference("Schedules").child(movieTitle).get().addOnSuccessListener { snapshot ->
-                if (snapshot.exists()) {
+                if (snapshot.exists() && snapshot.childrenCount > 0) {
                     // Use custom schedules
                     val customDates = mutableListOf<String>()
                     val calendarMap = mutableMapOf<String, List<String>>()
 
                     for (child in snapshot.children) {
                         val d = child.child("date").value?.toString() ?: ""
-                        val t = child.child("timeSlots").value as? List<String> ?: listOf()
-                        if (d.isNotEmpty()) {
+                        val t = (child.child("timeSlots").value as? List<*>)?.mapNotNull { it?.toString() } ?: listOf()
+                        if (d.isNotEmpty() && t.isNotEmpty()) {
                             customDates.add(d)
                             calendarMap[d] = t
                         }
@@ -168,8 +175,12 @@ class SeatListActivity : AppCompatActivity() {
                     }
                 }
 
-                // Fallback to default generation if no custom schedule
-                setupDefaultSchedules()
+                // If no valid custom schedules found, hide the view or show empty
+                // Instead of fallback to default random schedules, we should probably
+                // only show what the Admin has created.
+                dateRecyclerview.adapter = null
+                binding.TimeRecyclerview.adapter = null
+                android.widget.Toast.makeText(this@SeatListActivity, "No schedule available for this movie", android.widget.Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -178,34 +189,25 @@ class SeatListActivity : AppCompatActivity() {
         binding.TimeRecyclerview.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         selectedTime = if (times.isNotEmpty()) times[0] else null
+
+        // Reset selection when time changes
+        resetSelection()
+
         val timeAdapter = TimeAdapter(times) { time ->
             selectedTime = time
+            resetSelection()
             initSeatsList()
         }
         binding.TimeRecyclerview.adapter = timeAdapter
         initSeatsList()
     }
 
-    private fun setupDefaultSchedules() {
-        val dates = generateDates()
-        selectedDate = dates[0]
-        val dateAdapter = DateAdapter(dates) { date ->
-            selectedDate = date
-            initSeatsList()
-        }
-        binding.dateRecyclerview.adapter = dateAdapter
-
-        binding.TimeRecyclerview.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        val times = generateTimeSlots()
-        selectedTime = times[0]
-        val timeAdapter = TimeAdapter(times) { time ->
-            selectedTime = time
-            initSeatsList()
-        }
-        binding.TimeRecyclerview.adapter = timeAdapter
-
-        initSeatsList()
+    private fun resetSelection() {
+        binding.numberSelectedTxt.text = "0 Seats Selected"
+        binding.priceTxt.text = "$0.00"
+        price = 0.0
+        number = 0
+        selectedSeatNames = ""
     }
 
     private fun buyTickets(date: String, time: String) {

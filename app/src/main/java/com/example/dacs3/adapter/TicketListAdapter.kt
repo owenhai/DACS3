@@ -23,10 +23,12 @@ class TicketListAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val ticket = tickets[position]
+        val df = java.text.DecimalFormat("#,###")
+
         holder.binding.movieTitleTxt.text = ticket.movieTitle
         holder.binding.dateTxt.text = "${ticket.showDate} | ${ticket.showTime}"
         holder.binding.seatsTxt.text = "Seats: ${ticket.seatNo}"
-        holder.binding.priceTxt.text = "$${String.format("%.2f", ticket.totalPrice)}"
+        holder.binding.priceTxt.text = "$${df.format(ticket.totalPrice)}"
 
         holder.binding.statusTxt.text = ticket.status
         when (ticket.status) {

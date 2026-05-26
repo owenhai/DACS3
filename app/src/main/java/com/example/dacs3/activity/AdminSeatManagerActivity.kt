@@ -130,9 +130,9 @@ class AdminSeatManagerActivity : AppCompatActivity() {
             seatList.add(Seat(status, name))
         }
 
-        val adapter = SeatListAdapter(seatList, this, object : SeatListAdapter.SelectedSeat {
+        val adapter = SeatListAdapter(seatList, this, listOf(), object : SeatListAdapter.SelectedSeat {
             override fun Return(selectedName: String, num: Int) {
-                // In Admin mode, clicking a seat toggles its status
+
                 if (selectedName.isNotEmpty()) {
                     toggleSeatStatus(selectedName)
                 }
@@ -175,4 +175,3 @@ class AdminSeatManagerActivity : AppCompatActivity() {
         return times
     }
 }
-
