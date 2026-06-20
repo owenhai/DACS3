@@ -50,16 +50,35 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <EditText
-                android:id="@+id/titleEdit"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Movie Title (Unique ID)"
-                android:textColor="@color/white"
-                android:textColorHint="@color/grey"
-                android:background="@drawable/light_black_bg"
-                android:padding="12dp"
-                android:layout_marginBottom="12dp" />
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+                <EditText
+                    android:id="@+id/titleEdit"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Movie Title (Unique ID)"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/grey"
+                    android:background="@drawable/light_black_bg"
+                    android:padding="12dp"
+                    android:layout_marginEnd="8dp" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/aiFillBtn"
+                        android:layout_width="80dp"
+                        android:layout_height="50dp"
+                        android:background="@drawable/orange_button_rounded"
+                        android:text="FILL"
+                        android:textAllCaps="true"
+                        android:textColor="@color/white"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+            </LinearLayout>
 
             <EditText
                 android:id="@+id/descriptionEdit"
