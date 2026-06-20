@@ -54,14 +54,11 @@ class TicketListActivity : AppCompatActivity() {
     }
 
     private fun freeSeats(ticket: Ticket) {
-        val dateKey = ticket.showDate.replace("/", "_")
-        val timeKey = ticket.showTime.replace(":", "_").replace(" ", "_")
+        if (ticket.sessionId.isEmpty()) return
+        
         val seats = ticket.seatNo.split(", ")
-
         val occupiedSeatsRef = database.getReference("OccupiedSeats")
-            .child(ticket.movieTitle)
-            .child(dateKey)
-            .child(timeKey)
+            .child(ticket.sessionId)
 
         for (seat in seats) {
             occupiedSeatsRef.child(seat).removeValue()
@@ -85,13 +82,13 @@ class TicketListActivity : AppCompatActivity() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     ticketList.clear()
                     val now = System.currentTimeMillis()
-                    val tenMinutesMs = 10 * 60 * 1000
+                    val fiveMinutesMs = 5 * 60 * 1000
 
                     for (data in snapshot.children) {
                         val ticket = data.getValue(Ticket::class.java)
                         ticket?.let {
-                            // Tự động xóa nếu quá 10 phút và vẫn là Pending
-                            if (it.status == "Pending" && (now - it.createdAt) > tenMinutesMs) {
+                            // Tự động xóa nếu quá 5 phút và vẫn là Pending
+                            if (it.status == "Pending" && (now - it.createdAt) > fiveMinutesMs) {
                                 database.getReference("Tickets").child(it.ticketId).removeValue()
                                 freeSeats(it) // Giải phóng ghế khi tự động xóa
                             } else {

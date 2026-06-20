@@ -8,6 +8,7 @@ data class Ticket(
     val showDate: String = "",
     val showTime: String = "",
     val seatNo: String = "",
+    val sessionId: String = "", // Add this to track occupied seats
     val totalPrice: Double = 0.0,
     var isCheckedIn: Boolean = false,
     var status: String = "Pending", // "Pending", "Paid", "Used"

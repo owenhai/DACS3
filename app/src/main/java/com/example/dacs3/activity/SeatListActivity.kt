@@ -192,6 +192,7 @@ class SeatListActivity : AppCompatActivity() {
                         showDate = date,
                         showTime = time,
                         seatNo = selectedSeatNames,
+                        sessionId = sessionId,
                         totalPrice = price,
                         isCheckedIn = false,
                         status = "Pending",

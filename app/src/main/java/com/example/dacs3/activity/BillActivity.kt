@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.example.dacs3.R
+import com.bumptech.glide.Glide
 import com.example.dacs3.databinding.ActivityBillBinding
 import com.example.dacs3.model.Ticket
 import com.google.firebase.database.FirebaseDatabase
@@ -98,10 +99,24 @@ class BillActivity : AppCompatActivity() {
     }
 
     private fun generatePaymentQR() {
-        // Simplified VietQR simulation: https://img.vietqr.io/image/<BANK_ID>-<ACCOUNT_NO>-<TEMPLATE>.png
-        // In a real app, you'd use the actual API. Here we generate a QR for the Bill ID.
-        val paymentContent = "PAYMENT_FOR_TICKET_${ticket.ticketId}_AMOUNT_${ticket.totalPrice}"
-        generateQRCode(paymentContent)
+        // Construct VietQR Quick Link URL
+        val bankId = "970422"
+        val accountNo = "7705092006"
+        val template = "compact"
+        val amount = ticket.totalPrice.toInt().toString()
+        val description = ticket.ticketId
+        val accountName = "TRAN LE QUOC ANH"
+
+        val vietQrUrl = "https://img.vietqr.io/image/$bankId-$accountNo-$template.png" +
+                "?amount=$amount" +
+                "&addInfo=$description" +
+                "&accountName=${java.net.URLEncoder.encode(accountName, "UTF-8")}"
+
+        // Load the VietQR image using Glide
+        Glide.with(this)
+            .load(vietQrUrl)
+            .placeholder(R.drawable.blur_bg)
+            .into(binding.qrCodeImg)
     }
 
     private fun generateTicketQR() {
