@@ -149,17 +149,25 @@ class SeatListActivity : AppCompatActivity() {
             seatList.add(Seat(status, seatName))
         }
 
-        val unitPrice = if (film.Price > 0) film.Price else 5.0
+        val unitPrice = if (film.Price > 0) film.Price else 45000.0
         val seatAdapter = SeatListAdapter(seatList, this, object : SeatListAdapter.SelectedSeat {
             override fun Return(selectedName: String, num: Int, clickedName: String) {
                 number = num
                 selectedSeatNames = selectedName
                 price = num * unitPrice
                 binding.numberSelectedTxt.text = "$num Seats Selected"
-                binding.priceTxt.text = "$${java.text.DecimalFormat("#,###").format(price)}"
+                binding.priceTxt.text = formatVnd(price)
             }
         }, currentSelectedList)
         binding.seatRecyclerView.adapter = seatAdapter
+    }
+
+    private fun formatVnd(amount: Double): String {
+        val formatter = java.text.DecimalFormat("#,###")
+        val symbols = java.text.DecimalFormatSymbols(java.util.Locale("vi", "VN"))
+        symbols.groupingSeparator = '.'
+        formatter.decimalFormatSymbols = symbols
+        return "${formatter.format(amount)} đ"
     }
 
     private fun buyTickets(date: String, time: String) {
@@ -207,7 +215,7 @@ class SeatListActivity : AppCompatActivity() {
         number = 0
         price = 0.0
         binding.numberSelectedTxt.text = "0 Seats Selected"
-        binding.priceTxt.text = "$0"
+        binding.priceTxt.text = "0 đ"
     }
 
     private fun getIntentExtra() {

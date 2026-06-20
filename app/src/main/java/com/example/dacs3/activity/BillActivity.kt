@@ -50,13 +50,20 @@ class BillActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
-        val df = java.text.DecimalFormat("#,###")
         binding.movieTitleTxt.text = ticket.movieTitle
         binding.dateTimeTxt.text = "${ticket.showDate} | ${ticket.showTime}"
         binding.seatsTxt.text = "Seats: ${ticket.seatNo}"
-        binding.totalPriceTxt.text = "Total: $${df.format(ticket.totalPrice)}"
+        binding.totalPriceTxt.text = "Total: ${formatVnd(ticket.totalPrice)}"
         binding.ticketIdDisplayTxt.text = "ID: ${ticket.ticketId}"
         updateStatusUI()
+    }
+
+    private fun formatVnd(amount: Double): String {
+        val formatter = java.text.DecimalFormat("#,###")
+        val symbols = java.text.DecimalFormatSymbols(java.util.Locale("vi", "VN"))
+        symbols.groupingSeparator = '.'
+        formatter.decimalFormatSymbols = symbols
+        return "${formatter.format(amount)} đ"
     }
 
     private fun updateStatusUI() {
@@ -94,14 +101,13 @@ class BillActivity : AppCompatActivity() {
     private fun generateTicketQR() {
         // Structured content for scannability and quick info display
         // Format: TICKET_VALIDATION|ID|TITLE|DATE|TIME|SEATS|PRICE
-        val df = java.text.DecimalFormat("#,###")
         val content = "TICKET_VALIDATION|" +
                 "${ticket.ticketId}|" +
                 "${ticket.movieTitle}|" +
                 "${ticket.showDate}|" +
                 "${ticket.showTime}|" +
                 "${ticket.seatNo}|" +
-                "${df.format(ticket.totalPrice)}"
+                "${formatVnd(ticket.totalPrice)}"
 
         generateQRCode(content)
     }

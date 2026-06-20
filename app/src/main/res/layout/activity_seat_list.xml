@@ -117,7 +117,7 @@
             android:id="@+id/priceTxt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="$0"
+            android:text="0 đ"
             android:textColor="@color/white"
             android:textSize="26sp"
             android:textStyle="bold"

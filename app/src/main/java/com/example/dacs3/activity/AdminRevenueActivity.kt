@@ -1,7 +1,6 @@
 package com.example.dacs3.activity
 
 import android.os.Bundle
-import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,6 +12,8 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.Locale
 
 class AdminRevenueActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAdminRevenueBinding
@@ -57,8 +58,7 @@ class AdminRevenueActivity : AppCompatActivity() {
                 }
 
                 paidTickets.reverse()
-                val df = DecimalFormat("$#,##0.00")
-                binding.totalRevenueTxt.text = df.format(totalRevenue)
+                binding.totalRevenueTxt.text = formatVnd(totalRevenue)
                 binding.soldCountTxt.text = soldCount.toString()
                 binding.pendingCountTxt.text = pendingCount.toString()
                 binding.recentSalesRecyclerView.adapter?.notifyDataSetChanged()
@@ -66,5 +66,13 @@ class AdminRevenueActivity : AppCompatActivity() {
 
             override fun onCancelled(error: DatabaseError) {}
         })
+    }
+
+    private fun formatVnd(amount: Double): String {
+        val formatter = DecimalFormat("#,###")
+        val symbols = DecimalFormatSymbols(Locale("vi", "VN"))
+        symbols.groupingSeparator = '.'
+        formatter.decimalFormatSymbols = symbols
+        return "${formatter.format(amount)} đ"
     }
 }
