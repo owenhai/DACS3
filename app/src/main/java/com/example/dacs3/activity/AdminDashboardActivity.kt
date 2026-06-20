@@ -33,6 +33,10 @@ class AdminDashboardActivity : AppCompatActivity() {
             startActivity(Intent(this, StaffScanActivity::class.java))
         }
 
+        binding.manageRoomsBtn.setOnClickListener {
+            startActivity(Intent(this, AdminRoomsActivity::class.java))
+        }
+
         binding.revenueReportBtn.setOnClickListener {
             startActivity(Intent(this, AdminRevenueActivity::class.java))
         }

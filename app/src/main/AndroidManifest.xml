@@ -18,6 +18,9 @@
             android:name=".activity.AdminDashboardActivity"
             android:exported="false" />
         <activity
+            android:name=".activity.AdminRoomsActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.SeatListActivity"
             android:exported="false" />
         <activity

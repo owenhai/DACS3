@@ -19,10 +19,10 @@ class DateAdapter(private val timeSlots : List<String>, private val onDateSelect
     RecyclerView.ViewHolder(binding.root){
         fun bind(date : String ){
             val dateParts = date.split("/")
-            if(dateParts.size == 3)
+            if(dateParts.size >= 2)
             {
                 binding.dayTxt.text = dateParts[0]
-                binding.dayMonthTxt.text = dateParts[1] +  " " + dateParts[2]
+                binding.dayMonthTxt.text = if (dateParts.size == 3) "${dateParts[1]} ${dateParts[2]}" else dateParts[1]
 
                 if(selectedPosition == position){
                     binding.mainLayout.setBackgroundResource(R.drawable.orange_bg)

@@ -11,6 +11,8 @@ import com.example.dacs3.adapter.SeatListAdapter
 import com.example.dacs3.adapter.TimeAdapter
 import com.example.dacs3.databinding.ActivityAdminSeatManagerBinding
 import com.example.dacs3.model.Seat
+import com.example.dacs3.model.ScheduleModel
+import com.example.dacs3.model.CinemaRoom
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -39,71 +41,90 @@ class AdminSeatManagerActivity : AppCompatActivity() {
         initScheduleLists()
     }
 
+    private var selectedSessionId: String? = null
+    private var currentRoomRows: Int = 9
+    private var currentRoomCols: Int = 9
+
     private fun initScheduleLists() {
         binding.dateRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.timeRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
         movieTitle?.let { title ->
-            database.getReference("Schedules").child(title).get().addOnSuccessListener { snapshot ->
+            database.getReference("SchedulesByMovie").child(title).get().addOnSuccessListener { snapshot ->
                 val dates = mutableListOf<String>()
-                val calendarMap = mutableMapOf<String, List<String>>()
+                val sessionMap = mutableMapOf<String, MutableList<ScheduleModel>>()
 
                 if (snapshot.exists()) {
                     for (child in snapshot.children) {
-                        val d = child.child("date").value?.toString() ?: ""
-                        val t = (child.child("timeSlots").value as? List<*>)?.mapNotNull { it?.toString() } ?: listOf()
-                        if (d.isNotEmpty()) {
-                            dates.add(d)
-                            calendarMap[d] = t
+                        val schedule = child.getValue(ScheduleModel::class.java)
+                        schedule?.let {
+                            it.sessionId = child.key ?: ""
+                            if (!dates.contains(it.date)) dates.add(it.date)
+                            if (!sessionMap.containsKey(it.date)) sessionMap[it.date] = mutableListOf()
+                            sessionMap[it.date]?.add(it)
                         }
                     }
                 }
 
                 if (dates.isEmpty()) {
-                    // No custom schedules, set empty and show message
                     binding.dateRecyclerView.adapter = null
                     binding.timeRecyclerView.adapter = null
-                    Toast.makeText(this@AdminSeatManagerActivity, "No schedule available for this movie", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "No schedule available", Toast.LENGTH_SHORT).show()
                 } else {
-                    setupAdapters(dates, calendarMap)
+                    setupAdapters(dates, sessionMap)
                 }
             }
         }
     }
 
-    private fun setupAdapters(dates: List<String>, calendarMap: Map<String, List<String>>) {
+    private fun setupAdapters(dates: List<String>, sessionMap: Map<String, List<ScheduleModel>>) {
         selectedDate = dates[0]
         val dateAdapter = DateAdapter(dates) { date ->
             selectedDate = date
-            val times = calendarMap[date] ?: calendarMap.values.firstOrNull() ?: listOf()
-            updateTimes(times)
+            val sessions = sessionMap[date] ?: listOf()
+            updateTimes(sessions)
         }
         binding.dateRecyclerView.adapter = dateAdapter
 
-        val initialTimes = calendarMap[dates[0]] ?: calendarMap.values.firstOrNull() ?: listOf()
-        updateTimes(initialTimes)
+        val initialSessions = sessionMap[dates[0]] ?: listOf()
+        updateTimes(initialSessions)
     }
 
-    private fun updateTimes(times: List<String>) {
-        selectedTime = if (times.isNotEmpty()) times[0] else null
-        val timeAdapter = TimeAdapter(times) { time ->
-            selectedTime = time
-            loadSeats()
+    private fun updateTimes(sessions: List<ScheduleModel>) {
+        val timeStrings = sessions.map { it.timeSlots.firstOrNull() ?: "" }
+        val timeAdapter = TimeAdapter(timeStrings) { time ->
+            val session = sessions.find { it.timeSlots.firstOrNull() == time }
+            session?.let {
+                selectedTime = time
+                selectedSessionId = it.sessionId
+                fetchRoomAndLoadSeats(it.roomId)
+            }
         }
         binding.timeRecyclerView.adapter = timeAdapter
-        loadSeats()
+        
+        if (sessions.isNotEmpty()) {
+            selectedTime = timeStrings[0]
+            selectedSessionId = sessions[0].sessionId
+            fetchRoomAndLoadSeats(sessions[0].roomId)
+        }
+    }
+
+    private fun fetchRoomAndLoadSeats(roomId: String) {
+        database.getReference("Rooms").child(roomId).get().addOnSuccessListener { snapshot ->
+            val room = snapshot.getValue(com.example.dacs3.model.CinemaRoom::class.java)
+            room?.let {
+                currentRoomRows = it.totalRows
+                currentRoomCols = it.totalCols
+                loadSeats()
+            }
+        }
     }
 
     private fun loadSeats() {
-        if (selectedDate == null || selectedTime == null) return
-
-        val dateKey = selectedDate!!.replace("/", "_")
-        val timeKey = selectedTime!!.replace(":", "_").replace(" ", "_")
+        val sessionId = selectedSessionId ?: return
 
         database.getReference("OccupiedSeats")
-            .child(movieTitle!!)
-            .child(dateKey)
-            .child(timeKey)
+            .child(sessionId)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val occupiedSeats = mutableSetOf<String>()
@@ -120,11 +141,13 @@ class AdminSeatManagerActivity : AppCompatActivity() {
     }
 
     private fun displaySeats(occupiedSeats: Set<String>) {
-        binding.seatRecyclerView.layoutManager = GridLayoutManager(this, 7)
+        binding.seatRecyclerView.layoutManager = GridLayoutManager(this, currentRoomCols)
         val seatList = mutableListOf<Seat>()
-        for (i in 0 until 81) {
-            val row = (i / 7) + 1
-            val col = (i % 7) + 1
+        val totalSeats = currentRoomRows * currentRoomCols
+        
+        for (i in 0 until totalSeats) {
+            val row = (i / currentRoomCols) + 1
+            val col = (i % currentRoomCols) + 1
             val name = "${('A' + (row - 1))}$col"
             val status = if (occupiedSeats.contains(name)) Seat.SeatStatus.UNAVAILABLE else Seat.SeatStatus.AVAILABLE
             seatList.add(Seat(status, name))
@@ -139,21 +162,16 @@ class AdminSeatManagerActivity : AppCompatActivity() {
     }
 
     private fun toggleSeatStatus(seatName: String) {
-        val dateKey = selectedDate!!.replace("/", "_")
-        val timeKey = selectedTime!!.replace(":", "_").replace(" ", "_")
+        val sessionId = selectedSessionId ?: return
         val ref = database.getReference("OccupiedSeats")
-            .child(movieTitle!!)
-            .child(dateKey)
-            .child(timeKey)
+            .child(sessionId)
             .child(seatName)
 
         ref.get().addOnSuccessListener { snapshot ->
             if (snapshot.exists()) {
-                ref.removeValue() // Make available
-                Toast.makeText(this, "$seatName made AVAILABLE", Toast.LENGTH_SHORT).show()
+                ref.removeValue()
             } else {
-                ref.setValue(true) // Make occupied
-                Toast.makeText(this, "$seatName made OCCUPIED", Toast.LENGTH_SHORT).show()
+                ref.setValue(true)
             }
         }
     }
