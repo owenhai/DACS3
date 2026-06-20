@@ -58,12 +58,11 @@
                 <androidx.cardview.widget.CardView
                     android:id="@+id/manageMoviesBtn"
                     android:layout_width="0dp"
-                    android:layout_height="150dp"
+                    android:layout_height="140dp"
                     android:layout_weight="1"
                     android:layout_margin="8dp"
                     app:cardBackgroundColor="@color/black2"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="4dp">
+                    app:cardCornerRadius="12dp">
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -79,7 +78,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Add/Edit/Delete"
+                            android:text="Database"
                             android:textColor="@color/grey"
                             android:textSize="12sp" />
                     </LinearLayout>
@@ -88,12 +87,11 @@
                 <androidx.cardview.widget.CardView
                     android:id="@+id/manageScheduleBtn"
                     android:layout_width="0dp"
-                    android:layout_height="150dp"
+                    android:layout_height="140dp"
                     android:layout_weight="1"
                     android:layout_margin="8dp"
                     app:cardBackgroundColor="@color/black2"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="4dp">
+                    app:cardCornerRadius="12dp">
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -109,7 +107,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Dates &amp; Times"
+                            android:text="Timeline"
                             android:textColor="@color/grey"
                             android:textSize="12sp" />
                     </LinearLayout>
@@ -125,12 +123,11 @@
                 <androidx.cardview.widget.CardView
                     android:id="@+id/manageTicketsBtn"
                     android:layout_width="0dp"
-                    android:layout_height="150dp"
+                    android:layout_height="140dp"
                     android:layout_weight="1"
                     android:layout_margin="8dp"
                     app:cardBackgroundColor="@color/black2"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="4dp">
+                    app:cardCornerRadius="12dp">
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -146,7 +143,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="History &amp; Cancel"
+                            android:text="History"
                             android:textColor="@color/grey"
                             android:textSize="12sp" />
                     </LinearLayout>
@@ -155,12 +152,11 @@
                 <androidx.cardview.widget.CardView
                     android:id="@+id/manageRoomsBtn"
                     android:layout_width="0dp"
-                    android:layout_height="150dp"
+                    android:layout_height="140dp"
                     android:layout_weight="1"
                     android:layout_margin="8dp"
                     app:cardBackgroundColor="@color/black2"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="4dp">
+                    app:cardCornerRadius="12dp">
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -176,14 +172,14 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Cinema Layouts"
+                            android:text="Cinema"
                             android:textColor="@color/grey"
                             android:textSize="12sp" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
             </LinearLayout>
 
-            <!-- Row 3: Scan QR & Revenue Report -->
+            <!-- Row 3: Scan QR & Food Management -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -192,12 +188,11 @@
                 <androidx.cardview.widget.CardView
                     android:id="@+id/staffScanBtn"
                     android:layout_width="0dp"
-                    android:layout_height="150dp"
+                    android:layout_height="140dp"
                     android:layout_weight="1"
                     android:layout_margin="8dp"
                     app:cardBackgroundColor="@color/black2"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="4dp">
+                    app:cardCornerRadius="12dp">
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -213,21 +208,20 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Verify Tickets"
+                            android:text="Verify"
                             android:textColor="@color/grey"
                             android:textSize="12sp" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/revenueReportBtn"
+                    android:id="@+id/manageFoodBtn"
                     android:layout_width="0dp"
-                    android:layout_height="150dp"
+                    android:layout_height="140dp"
                     android:layout_weight="1"
                     android:layout_margin="8dp"
                     app:cardBackgroundColor="@color/black2"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="4dp">
+                    app:cardCornerRadius="12dp">
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -236,19 +230,48 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Revenue"
-                            android:textColor="@color/yellow"
+                            android:text="Snacks"
+                            android:textColor="@color/white"
                             android:textSize="18sp"
                             android:textStyle="bold" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Analytics"
+                            android:text="Food &amp; Drink"
                             android:textColor="@color/grey"
                             android:textSize="12sp" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
             </LinearLayout>
+
+            <!-- Row 4: Revenue Report -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/revenueReportBtn"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_margin="8dp"
+                app:cardBackgroundColor="@color/black2"
+                app:cardCornerRadius="12dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="REVENUE REPORT"
+                        android:textColor="@color/yellow"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sales &amp; Analytics"
+                        android:textColor="@color/grey"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
         </LinearLayout>
     </ScrollView>

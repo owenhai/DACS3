@@ -37,6 +37,10 @@ class AdminDashboardActivity : AppCompatActivity() {
             startActivity(Intent(this, AdminRoomsActivity::class.java))
         }
 
+        binding.manageFoodBtn.setOnClickListener {
+            startActivity(Intent(this, AdminFoodActivity::class.java))
+        }
+
         binding.revenueReportBtn.setOnClickListener {
             startActivity(Intent(this, AdminRevenueActivity::class.java))
         }

@@ -21,6 +21,12 @@
             android:name=".activity.AdminRoomsActivity"
             android:exported="false" />
         <activity
+            android:name=".activity.AdminFoodActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.FoodSelectionActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.SeatListActivity"
             android:exported="false" />
         <activity

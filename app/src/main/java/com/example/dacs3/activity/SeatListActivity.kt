@@ -199,7 +199,7 @@ class SeatListActivity : AppCompatActivity() {
                         createdAt = System.currentTimeMillis()
                     )
                     database.getReference("Tickets").child(ticketId).setValue(ticket).addOnSuccessListener {
-                        val intent = android.content.Intent(this@SeatListActivity, BillActivity::class.java)
+                        val intent = android.content.Intent(this@SeatListActivity, FoodSelectionActivity::class.java)
                         intent.putExtra("ticket", ticket)
                         startActivity(intent)
                     }

@@ -11,6 +11,7 @@ data class Ticket(
     val totalPrice: Double = 0.0,
     var isCheckedIn: Boolean = false,
     var status: String = "Pending", // "Pending", "Paid", "Used"
+    var foodDetails: String = "",
     val userId: String = "",
     val createdAt: Long = System.currentTimeMillis()
 ) : Serializable

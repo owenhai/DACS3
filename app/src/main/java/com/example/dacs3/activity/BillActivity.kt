@@ -54,6 +54,12 @@ class BillActivity : AppCompatActivity() {
         binding.dateTimeTxt.text = "${ticket.showDate} | ${ticket.showTime}"
         binding.seatsTxt.text = "Seats: ${ticket.seatNo}"
         binding.totalPriceTxt.text = "Total: ${formatVnd(ticket.totalPrice)}"
+        
+        // Show food details if any
+        if (ticket.foodDetails.isNotEmpty()) {
+            binding.seatsTxt.text = "${binding.seatsTxt.text}\nSnacks: ${ticket.foodDetails}"
+        }
+
         binding.ticketIdDisplayTxt.text = "ID: ${ticket.ticketId}"
         updateStatusUI()
     }
