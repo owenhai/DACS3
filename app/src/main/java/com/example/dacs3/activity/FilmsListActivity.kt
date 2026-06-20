@@ -30,10 +30,12 @@ class FilmsListActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val type = intent.getStringExtra("type") ?: "Items"
+        val searchQuery = intent.getStringExtra("searchQuery")
+        
         setupRecyclerView()
         setupHeader(type)
         setupSearch()
-        loadFilms(type)
+        loadFilms(type, searchQuery)
     }
 
     private fun setupHeader(type: String) {
@@ -79,12 +81,12 @@ class FilmsListActivity : AppCompatActivity() {
         adapter.updateItems(filtered)
     }
 
-    private fun loadFilms(type: String) {
+    private fun loadFilms(type: String, searchQuery: String? = null) {
         binding.progressBarFilmsList.visibility = View.VISIBLE
         allItems.clear()
 
         if (type == "Favorites") {
-            loadFavorites()
+            loadFavorites(searchQuery)
             return
         }
 
@@ -101,7 +103,13 @@ class FilmsListActivity : AppCompatActivity() {
                             }
                         }
                     }
-                    adapter.updateItems(allItems)
+                    
+                    if (searchQuery != null) {
+                        binding.searchEditText.setText(searchQuery)
+                        filterFilms(searchQuery)
+                    } else {
+                        adapter.updateItems(allItems)
+                    }
                     binding.progressBarFilmsList.visibility = View.GONE
                 }
 
@@ -112,7 +120,7 @@ class FilmsListActivity : AppCompatActivity() {
             })
     }
 
-    private fun loadFavorites() {
+    private fun loadFavorites(searchQuery: String? = null) {
         val sharedPref = getSharedPreferences("UserPrefs", MODE_PRIVATE)
         val customUserId = sharedPref.getString("customUserId", null)
 
@@ -134,7 +142,13 @@ class FilmsListActivity : AppCompatActivity() {
                             }
                         }
                     }
-                    adapter.updateItems(allItems)
+                    
+                    if (searchQuery != null) {
+                        binding.searchEditText.setText(searchQuery)
+                        filterFilms(searchQuery)
+                    } else {
+                        adapter.updateItems(allItems)
+                    }
                     binding.progressBarFilmsList.visibility = View.GONE
                 }
 

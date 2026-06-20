@@ -37,7 +37,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
     private val sliderHandle = Handler(Looper.getMainLooper())
     private val sliderRunnable = Runnable {
-        binding.viewPager2.currentItem = binding.viewPager2.currentItem + 1
+        if (binding.viewPager2.adapter != null && binding.viewPager2.adapter!!.itemCount > 0) {
+            binding.viewPager2.currentItem = binding.viewPager2.currentItem + 1
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +50,7 @@ class MainActivity : AppCompatActivity() {
 
         database = FirebaseDatabase.getInstance()
         firebaseAuth = FirebaseAuth.getInstance()
+// ... (rest of the setup)
 
         // Check user session
         checkUserSession()
@@ -57,6 +60,24 @@ class MainActivity : AppCompatActivity() {
 
         // Check for Admin privileges
         checkAdminStatus()
+
+        // Setup Search bar
+        binding.editTextText.setOnEditorActionListener { v, actionId, event ->
+            val query = binding.editTextText.text.toString().trim()
+            if (query.isNotEmpty()) {
+                startActivity(Intent(this, FilmsListActivity::class.java).apply {
+                    putExtra("type", "Items")
+                    putExtra("searchQuery", query)
+                })
+            }
+            true
+        }
+
+        binding.editTextText.setOnClickListener {
+            startActivity(Intent(this, FilmsListActivity::class.java).apply {
+                putExtra("type", "Items")
+            })
+        }
 
         // Setup "See All" buttons
         binding.seeAllTopMovies.setOnClickListener {
@@ -102,6 +123,12 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         binding.bottomNavigation.setItemSelected(R.id.explorer, true)
         loadUserProfile()
+        sliderHandle.postDelayed(sliderRunnable, 5000)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sliderHandle.removeCallbacks(sliderRunnable)
     }
 
     private fun checkUserSession() {
@@ -238,6 +265,7 @@ class MainActivity : AppCompatActivity() {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
                     sliderHandle.removeCallbacks(sliderRunnable)
+                    sliderHandle.postDelayed(sliderRunnable, 5000)
                 }
             })
         }
