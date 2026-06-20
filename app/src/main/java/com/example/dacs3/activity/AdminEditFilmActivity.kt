@@ -138,7 +138,7 @@ class AdminEditFilmActivity : AppCompatActivity() {
         val desc = binding.descriptionEdit.text.toString().trim()
         val poster = binding.posterEdit.text.toString().trim()
         val trailer = binding.trailerEdit.text.toString().trim()
-        val imdb = binding.imdbEdit.text.toString().toIntOrNull() ?: 0
+        val imdb = binding.imdbEdit.text.toString().toDoubleOrNull() ?: 0.0
         val year = binding.yearEdit.text.toString().toIntOrNull() ?: 0
         val price = binding.priceEdit.text.toString().toDoubleOrNull() ?: 0.0
         val time = binding.timeEdit.text.toString().trim()

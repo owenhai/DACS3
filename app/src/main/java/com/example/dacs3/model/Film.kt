@@ -8,7 +8,7 @@ data class Film(
     var Poster : String? = null,
     var Time : String? = null,
     var Trailer : String? = null,
-    var Imdb : Int = 0,
+    var Imdb : Double = 0.0,
     var Year : Int = 0,
     var Price : Double = 0.0,
     var Genre : ArrayList<String> = ArrayList(),
