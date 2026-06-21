@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">DACS3</string>
+    <string name="cinema_ticket_booking">Cinema Ticket Booking</string>
+    <string name="discover_and_book_the_latest_movies_nat_your_favourite_cinemas_n_easy_and_fast">Discover and book the latest movies\nat your favourite cinemas.\n Easy and fast!</string>
+    <string name="get_started">Get Started</string>
+    <string name="see_all">See All</string>
+    <string name="top_movies">Top Movies</string>
+    <string name="upcoming_movies">Upcoming Movies</string>
+    <string name="year">year</string>
+    <string name="imdb">imdb</string>
+    <string name="summery">Summery</string>
+    <string name="description">description</string>
+    <string name="cast">Cast</string>
+    <string name="buy_ticket">Buy Ticket</string>
+    <string name="casts">Casts</string>
 </resources>
