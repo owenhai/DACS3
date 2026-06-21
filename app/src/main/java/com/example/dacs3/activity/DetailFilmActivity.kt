@@ -91,6 +91,21 @@ class DetailFilmActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        // Add listener to play Trailer when clicking on movie poster
+        binding.filmPic.setOnClickListener {
+            val trailerUrl = film.Trailer
+            if (!trailerUrl.isNullOrEmpty()) {
+                try {
+                    val intent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse(trailerUrl))
+                    startActivity(intent)
+                } catch (e: Exception) {
+                    Toast.makeText(this, "Cannot open Trailer link", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(this, "Trailer not available for this movie", Toast.LENGTH_SHORT).show()
+            }
+        }
+
         val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val customUserId = sharedPref.getString("customUserId", null)
         val favouritesRef = customUserId?.let {

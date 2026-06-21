@@ -12,18 +12,14 @@ import com.example.dacs3.model.Cast
 class CastListAdapter(private val cast : List<Cast>) :
     RecyclerView.Adapter<CastListAdapter.ViewHolder>() {
 
-    private var context: Context? = null
-
     inner class ViewHolder(private val binding: ViewholderCastBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-
         fun bind(cast: Cast) {
-            context?.let {
-                Glide.with(it)
-                    .load(cast.PicUrl)
-                    .into(binding.actorImage)
-            }
+            Glide.with(itemView.context)
+                .load(cast.PicUrl)
+                .into(binding.actorImage)
+
             binding.nameTxt.text = cast.Actor
         }
     }
@@ -32,7 +28,6 @@ class CastListAdapter(private val cast : List<Cast>) :
         parent: ViewGroup,
         viewType: Int
     ): CastListAdapter.ViewHolder {
-        context = parent.context
         val binding = ViewholderCastBinding.inflate(
             android.view.LayoutInflater.from(parent.context),
             parent,

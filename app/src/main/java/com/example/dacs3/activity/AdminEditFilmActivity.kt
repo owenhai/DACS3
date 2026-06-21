@@ -15,6 +15,7 @@ class AdminEditFilmActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAdminEditFilmBinding
     private val database = FirebaseDatabase.getInstance()
     private var existingFilm: Film? = null
+    private var castList = ArrayList<com.example.dacs3.model.Cast>()
 
     // Đã cập nhật API Key của bạn
     private val TMDB_API_KEY = "3ef6076d9e017db200b46d51f700f5c0"
@@ -66,8 +67,13 @@ class AdminEditFilmActivity : AppCompatActivity() {
                     val detailsResponse = URL(detailsUrl).readText()
                     val movieDetails = JSONObject(detailsResponse)
 
+                    // Fetch Credits (Cast)
+                    val creditsUrl = "https://api.themoviedb.org/3/movie/$movieId/credits?api_key=$TMDB_API_KEY"
+                    val creditsResponse = URL(creditsUrl).readText()
+                    val creditsJson = JSONObject(creditsResponse)
+
                     runOnUiThread {
-                        populateFields(movieDetails)
+                        populateFields(movieDetails, creditsJson)
                     }
                 } else {
                     runOnUiThread {
@@ -83,7 +89,7 @@ class AdminEditFilmActivity : AppCompatActivity() {
         }
     }
 
-    private fun populateFields(json: JSONObject) {
+    private fun populateFields(json: JSONObject, credits: JSONObject? = null) {
         binding.descriptionEdit.setText(json.optString("overview", ""))
 
         val posterPath = json.optString("poster_path", "")
@@ -112,11 +118,32 @@ class AdminEditFilmActivity : AppCompatActivity() {
             binding.genreEdit.setText(genreList.joinToString(", "))
         }
 
+        // Process Cast
+        credits?.let {
+            val castArray = it.optJSONArray("cast")
+            if (castArray != null) {
+                castList.clear()
+                val limit = minOf(castArray.length(), 6) // Limit to top 6 actors
+                for (i in 0 until limit) {
+                    val actorObj = castArray.getJSONObject(i)
+                    val name = actorObj.optString("name")
+                    val profilePath = actorObj.optString("profile_path")
+                    val picUrl = if (profilePath.isNotEmpty() && profilePath != "null") {
+                        "https://image.tmdb.org/t/p/w200$profilePath"
+                    } else {
+                        ""
+                    }
+                    castList.add(com.example.dacs3.model.Cast(PicUrl = picUrl, Actor = name))
+                }
+            }
+        }
+
         Toast.makeText(this, "AI Success: Found ${json.getString("title")}", Toast.LENGTH_SHORT).show()
     }
 
     private fun setupUI() {
         if (existingFilm != null) {
+            castList = ArrayList(existingFilm?.Casts ?: ArrayList())
             binding.titleTxt.text = "Edit Movie"
             binding.titleEdit.setText(existingFilm?.Title)
             binding.titleEdit.isEnabled = false // Title is the path key
@@ -158,7 +185,8 @@ class AdminEditFilmActivity : AppCompatActivity() {
             Year = year,
             Price = price,
             Time = time,
-            Genre = genres
+            Genre = genres,
+            Casts = castList
         )
 
         database.getReference("Items").child(title).setValue(film)

@@ -42,7 +42,6 @@ class BillActivity : AppCompatActivity() {
         ticket = ticketExtra
 
         setupUI()
-        generatePaymentQR()
 
         binding.backBtn.setOnClickListener { finish() }
         binding.confirmPaymentBtn.setOnClickListener {
@@ -80,11 +79,12 @@ class BillActivity : AppCompatActivity() {
                 binding.statusTxt.setBackgroundResource(R.drawable.yellow_bg)
                 binding.qrHintTxt.text = "Scan to Pay via VietQR"
                 binding.confirmPaymentBtn.visibility = View.VISIBLE
+                generatePaymentQR()
             }
             "Paid" -> {
                 binding.statusTxt.setBackgroundResource(R.drawable.green_bg)
                 binding.statusTxt.setTextColor(Color.WHITE)
-                binding.qrHintTxt.text = "Show this QR at the cinema"
+                binding.qrHintTxt.text = "Staff: Scan this QR to Check-in"
                 binding.confirmPaymentBtn.visibility = View.GONE
                 generateTicketQR()
             }
@@ -94,6 +94,7 @@ class BillActivity : AppCompatActivity() {
                 binding.qrHintTxt.text = "Ticket has been used"
                 binding.confirmPaymentBtn.visibility = View.GONE
                 binding.qrCodeImg.alpha = 0.5f
+                generateTicketQR()
             }
         }
     }
@@ -136,6 +137,9 @@ class BillActivity : AppCompatActivity() {
     private fun generateQRCode(content: String) {
         val multiFormatWriter = MultiFormatWriter()
         try {
+            // Clear Glide to ensure it doesn't overwrite the bitmap we are about to set
+            Glide.with(this).clear(binding.qrCodeImg)
+
             val hints = mutableMapOf<com.google.zxing.EncodeHintType, Any>()
             hints[com.google.zxing.EncodeHintType.ERROR_CORRECTION] = com.google.zxing.qrcode.decoder.ErrorCorrectionLevel.H
             hints[com.google.zxing.EncodeHintType.MARGIN] = 2
@@ -157,8 +161,6 @@ class BillActivity : AppCompatActivity() {
                 ticket.status = "Paid"
                 markSeatsAsOccupied()
                 updateStatusUI()
-                // Regenerate the QR code now that it is Paid
-                generateTicketQR()
                 Toast.makeText(this, "Payment Successful!", Toast.LENGTH_SHORT).show()
             }
             .addOnFailureListener {
