@@ -91,8 +91,8 @@ class DetailFilmActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // Add listener to play Trailer when clicking on movie poster
-        binding.filmPic.setOnClickListener {
+        // Move trailer listener from filmPic to trailerBtn
+        binding.trailerBtn.setOnClickListener {
             val trailerUrl = film.Trailer
             if (!trailerUrl.isNullOrEmpty()) {
                 try {
